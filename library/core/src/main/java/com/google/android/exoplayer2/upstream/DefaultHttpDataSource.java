@@ -19,6 +19,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 import com.google.android.exoplayer2.C;
+import com.google.android.exoplayer2.upstream.novo.TokenManager;
 import com.google.android.exoplayer2.util.Assertions;
 import com.google.android.exoplayer2.util.Predicate;
 import com.google.android.exoplayer2.util.Util;
@@ -61,7 +62,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
   private static final int MAX_REDIRECTS = 20; // Same limit as okhttp.
   private static final long MAX_BYTES_TO_DRAIN = 2048;
   private static final Pattern CONTENT_RANGE_HEADER =
-      Pattern.compile("^bytes (\\d+)-(\\d+)/(\\d+)$");
+          Pattern.compile("^bytes (\\d+)-(\\d+)/(\\d+)$");
   private static final AtomicReference<byte[]> skipBufferReference = new AtomicReference<>();
 
   private final boolean allowCrossProtocolRedirects;
@@ -102,9 +103,9 @@ public class DefaultHttpDataSource implements HttpDataSource {
    * @param listener An optional listener.
    */
   public DefaultHttpDataSource(String userAgent, Predicate<String> contentTypePredicate,
-      TransferListener<? super DefaultHttpDataSource> listener) {
+                               TransferListener<? super DefaultHttpDataSource> listener) {
     this(userAgent, contentTypePredicate, listener, DEFAULT_CONNECT_TIMEOUT_MILLIS,
-        DEFAULT_READ_TIMEOUT_MILLIS);
+            DEFAULT_READ_TIMEOUT_MILLIS);
   }
 
   /**
@@ -119,10 +120,10 @@ public class DefaultHttpDataSource implements HttpDataSource {
    *     as an infinite timeout.
    */
   public DefaultHttpDataSource(String userAgent, Predicate<String> contentTypePredicate,
-      TransferListener<? super DefaultHttpDataSource> listener, int connectTimeoutMillis,
-      int readTimeoutMillis) {
+                               TransferListener<? super DefaultHttpDataSource> listener, int connectTimeoutMillis,
+                               int readTimeoutMillis) {
     this(userAgent, contentTypePredicate, listener, connectTimeoutMillis, readTimeoutMillis, false,
-        null);
+            null);
   }
 
   /**
@@ -142,9 +143,9 @@ public class DefaultHttpDataSource implements HttpDataSource {
    *     HTTP headers or {@code null} if not required.
    */
   public DefaultHttpDataSource(String userAgent, Predicate<String> contentTypePredicate,
-      TransferListener<? super DefaultHttpDataSource> listener, int connectTimeoutMillis,
-      int readTimeoutMillis, boolean allowCrossProtocolRedirects,
-      RequestProperties defaultRequestProperties) {
+                               TransferListener<? super DefaultHttpDataSource> listener, int connectTimeoutMillis,
+                               int readTimeoutMillis, boolean allowCrossProtocolRedirects,
+                               RequestProperties defaultRequestProperties) {
     this.userAgent = Assertions.checkNotEmpty(userAgent);
     this.contentTypePredicate = contentTypePredicate;
     this.listener = listener;
@@ -192,7 +193,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
       connection = makeConnection(dataSpec);
     } catch (IOException e) {
       throw new HttpDataSourceException("Unable to connect to " + dataSpec.uri.toString(), e,
-          dataSpec, HttpDataSourceException.TYPE_OPEN);
+              dataSpec, HttpDataSourceException.TYPE_OPEN);
     }
 
     int responseCode;
@@ -201,15 +202,20 @@ public class DefaultHttpDataSource implements HttpDataSource {
     } catch (IOException e) {
       closeConnectionQuietly();
       throw new HttpDataSourceException("Unable to connect to " + dataSpec.uri.toString(), e,
-          dataSpec, HttpDataSourceException.TYPE_OPEN);
+              dataSpec, HttpDataSourceException.TYPE_OPEN);
     }
 
-    // Check for a valid response code.
-    if (responseCode < 200 || responseCode > 299) {
+    if(responseCode == 500) { // for custom server hisham
+      try {
+        connection = makeConnectionCustom(new URL(dataSpec.uri.toString()));
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    } else  if (responseCode < 200 || responseCode > 299) { // Check for a valid response code.
       Map<String, List<String>> headers = connection.getHeaderFields();
       closeConnectionQuietly();
       InvalidResponseCodeException exception =
-          new InvalidResponseCodeException(responseCode, headers, dataSpec);
+              new InvalidResponseCodeException(responseCode, headers, dataSpec);
       if (responseCode == 416) {
         exception.initCause(new DataSourceException(DataSourceException.POSITION_OUT_OF_RANGE));
       }
@@ -235,7 +241,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
       } else {
         long contentLength = getContentLength(connection);
         bytesToRead = contentLength != C.LENGTH_UNSET ? (contentLength - bytesToSkip)
-            : C.LENGTH_UNSET;
+                : C.LENGTH_UNSET;
       }
     } else {
       // Gzip is enabled. If the server opts to use gzip then the content length in the response
@@ -258,6 +264,52 @@ public class DefaultHttpDataSource implements HttpDataSource {
     }
 
     return bytesToRead;
+  }
+
+  private HttpURLConnection makeConnectionCustom(URL url) throws IOException {
+    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+    connection.setConnectTimeout(connectTimeoutMillis);
+    connection.setReadTimeout(readTimeoutMillis);
+    if (defaultRequestProperties != null) {
+      for (Map.Entry<String, String> property : defaultRequestProperties.getSnapshot().entrySet()) {
+        connection.setRequestProperty(property.getKey(), property.getValue());
+      }
+    }
+    for (Map.Entry<String, String> property : requestProperties.getSnapshot().entrySet()) {
+      connection.setRequestProperty(property.getKey(), property.getValue());
+    }
+//    if (!(position == 0 && length == C.LENGTH_UNSET)) {
+//      String rangeRequest = "bytes=" + position + "-";
+//      if (length != C.LENGTH_UNSET) {
+//        rangeRequest += (position + length - 1);
+//      }
+//      connection.setRequestProperty("Range", rangeRequest);
+//    }
+    connection.setRequestProperty("User-Agent", userAgent);
+//    if (!allowGzip) {
+//      connection.setRequestProperty("Accept-Encoding", "identity");
+//    }
+//    connection.setInstanceFollowRedirects(followRedirects);
+//    connection.setDoOutput(postBody != null);
+//    if (postBody != null) {
+    connection.setRequestMethod("GET");
+    if(!TextUtils.isEmpty(TokenManager.getToken())) {
+      connection.setRequestProperty("token", TokenManager.getToken());
+    }
+    Log.d(TAG, "hisham: " + connection.getResponseCode());
+//      if (postBody.length == 0) {
+//        connection.connect();
+//      } else  {
+//        connection.setFixedLengthStreamingMode(postBody.length);
+//        connection.connect();
+//        OutputStream os = connection.getOutputStream();
+//        os.write(postBody);
+//        os.close();
+//      }
+//    } else {
+//      connection.connect();
+//    }
+    return connection;
   }
 
   @Override
@@ -354,15 +406,15 @@ public class DefaultHttpDataSource implements HttpDataSource {
     int redirectCount = 0;
     while (redirectCount++ <= MAX_REDIRECTS) {
       HttpURLConnection connection = makeConnection(
-          url, postBody, position, length, allowGzip, false /* followRedirects */);
+              url, postBody, position, length, allowGzip, false /* followRedirects */);
       int responseCode = connection.getResponseCode();
       if (responseCode == HttpURLConnection.HTTP_MULT_CHOICE
-          || responseCode == HttpURLConnection.HTTP_MOVED_PERM
-          || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
-          || responseCode == HttpURLConnection.HTTP_SEE_OTHER
-          || (postBody == null
+              || responseCode == HttpURLConnection.HTTP_MOVED_PERM
+              || responseCode == HttpURLConnection.HTTP_MOVED_TEMP
+              || responseCode == HttpURLConnection.HTTP_SEE_OTHER
+              || (postBody == null
               && (responseCode == 307 /* HTTP_TEMP_REDIRECT */
-                  || responseCode == 308 /* HTTP_PERM_REDIRECT */))) {
+              || responseCode == 308 /* HTTP_PERM_REDIRECT */))) {
         // For 300, 301, 302, and 303 POST requests follow the redirect and are transformed into
         // GET requests. For 307 and 308 POST requests are not redirected.
         postBody = null;
@@ -389,7 +441,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
    * @param followRedirects Whether to follow redirects.
    */
   private HttpURLConnection makeConnection(URL url, byte[] postBody, long position,
-      long length, boolean allowGzip, boolean followRedirects) throws IOException {
+                                           long length, boolean allowGzip, boolean followRedirects) throws IOException {
     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
     connection.setConnectTimeout(connectTimeoutMillis);
     connection.setReadTimeout(readTimeoutMillis);
@@ -482,7 +534,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
       if (matcher.find()) {
         try {
           long contentLengthFromRange =
-              Long.parseLong(matcher.group(2)) - Long.parseLong(matcher.group(1)) + 1;
+                  Long.parseLong(matcher.group(2)) - Long.parseLong(matcher.group(1)) + 1;
           if (contentLength < 0) {
             // Some proxy servers strip the Content-Length header. Fall back to the length
             // calculated here in this case.
@@ -493,7 +545,7 @@ public class DefaultHttpDataSource implements HttpDataSource {
             // change one of them to reduce the size of a request, but it is unlikely anybody would
             // increase it.
             Log.w(TAG, "Inconsistent headers [" + contentLengthHeader + "] [" + contentRangeHeader
-                + "]");
+                    + "]");
             contentLength = Math.max(contentLength, contentLengthFromRange);
           }
         } catch (NumberFormatException e) {
@@ -614,8 +666,8 @@ public class DefaultHttpDataSource implements HttpDataSource {
       }
       String className = inputStream.getClass().getName();
       if (className.equals("com.android.okhttp.internal.http.HttpTransport$ChunkedInputStream")
-          || className.equals(
-          "com.android.okhttp.internal.http.HttpTransport$FixedLengthInputStream")) {
+              || className.equals(
+              "com.android.okhttp.internal.http.HttpTransport$FixedLengthInputStream")) {
         Class<?> superclass = inputStream.getClass().getSuperclass();
         Method unexpectedEndOfInput = superclass.getDeclaredMethod("unexpectedEndOfInput");
         unexpectedEndOfInput.setAccessible(true);
