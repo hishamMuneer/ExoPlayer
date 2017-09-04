@@ -1,6 +1,7 @@
 package com.google.android.exoplayer2.demo;
 
 import android.os.AsyncTask;
+import android.text.TextUtils;
 import android.util.Log;
 
 import java.io.BufferedReader;
@@ -26,11 +27,15 @@ public class ServerHit {
     public static class JSONTask extends AsyncTask<String,String, String > {
 
         private final ServiceHitResponseListener listener;
+        private final String type;
         private String body;
+        private String contentType;
 
-        public JSONTask(String body, ServiceHitResponseListener listener){
+        public JSONTask(String type, String contentType, String body, ServiceHitResponseListener listener){
             this.body = body;
             this.listener = listener;
+            this.type = type;
+            this.contentType = contentType;
         }
 
         @Override
@@ -46,9 +51,12 @@ public class ServerHit {
             try {
                 URL url = new URL(params[0]);
                 connection = (HttpURLConnection) url.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-
+                if(!TextUtils.isEmpty(type)) {
+                    connection.setRequestMethod(type);
+                }
+                if(!TextUtils.isEmpty(contentType)) {
+                    connection.setRequestProperty("Content-Type", contentType);
+                }
                 if(body != null) {
                     byte[] outputInBytes = body.getBytes("UTF-8");
                     OutputStream os = connection.getOutputStream();
@@ -60,7 +68,7 @@ public class ServerHit {
                 InputStream stream = connection.getInputStream();
                 reader = new BufferedReader(new InputStreamReader(stream));
                 StringBuffer buffer = new StringBuffer();
-                String line ="";
+                String line;
                 while ((line = reader.readLine()) != null){
                     buffer.append(line);
                 }
@@ -99,4 +107,7 @@ public class ServerHit {
     }
 
     private static final String TAG = ServerHit.class.getSimpleName();
+
+
+    
 }

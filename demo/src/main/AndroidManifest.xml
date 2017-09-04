@@ -24,6 +24,7 @@
 
   <uses-permission android:name="android.permission.INTERNET" />
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
 
   <uses-feature
       android:name="android.software.leanback"
@@ -34,6 +35,7 @@
 
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
   <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
   <application
       android:name=".DemoApplication"
@@ -42,7 +44,8 @@
       android:icon="@mipmap/ic_launcher"
       android:label="@string/application_name"
       android:largeHeap="true">
-    <activity android:name=".MainActivity">
+    <activity android:name=".MainActivity"
+        android:theme="@android:style/Theme.Holo.Light">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
 
@@ -98,7 +101,8 @@
         <category android:name="android.intent.category.DEFAULT" />
       </intent-filter>
     </activity>
-    <activity android:name=".LoginActivity"></activity>
+    <activity android:name=".LoginActivity"
+        android:theme="@android:style/Theme.Holo.Light"></activity>
   </application>
 
 </manifest>

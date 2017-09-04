@@ -27,9 +27,16 @@ public class LoginActivity extends Activity {
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String url = "http://35.154.11.202/VocabimateLoginServer/webapi/myresource/login";
+
+
+                if(!Utils.isNetworkAvailable(LoginActivity.this)){
+                    Toast.makeText(LoginActivity.this, "No internet available", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                String url = Utils.getBaseUrl() + "VocabimateLoginServer/webapi/myresource/login";
                 String body = "username=" + etUserName.getText().toString()+"&password="+etPass.getText().toString();
-                ServerHit.JSONTask task = new ServerHit.JSONTask(body, new ServerHit.ServiceHitResponseListener() {
+                ServerHit.JSONTask task = new ServerHit.JSONTask("POST", "application/x-www-form-urlencoded", body, new ServerHit.ServiceHitResponseListener() {
                     @Override
                     public void onDone(String response) {
                         TokenManager.setToken(response);

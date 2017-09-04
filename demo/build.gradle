@@ -51,6 +51,11 @@ dependencies {
     compile project(modulePrefix + 'library-hls')
     compile project(modulePrefix + 'library-smoothstreaming')
     compile project(modulePrefix + 'library-ui')
+    compile 'commons-io:commons-io:2.5'
+    compile 'com.google.code.gson:gson:2.8.1'
+    compile 'com.github.bumptech.glide:glide:4.0.0'
+    compile 'com.android.support:support-v4:25.4.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
     withExtensionsCompile project(path: modulePrefix + 'extension-ffmpeg')
     withExtensionsCompile project(path: modulePrefix + 'extension-flac')
     withExtensionsCompile project(path: modulePrefix + 'extension-ima')
