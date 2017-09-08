@@ -39,36 +39,6 @@
         android:text="Encrypted stream - Token Auth"
         android:textAllCaps="false" />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"
-        android:layout_gravity="center"
-        android:visibility="gone"
-        android:gravity="center"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal">
-
-
-        <Button
-            android:id="@+id/btnLocal"
-            android:layout_width="match_parent"
-            android:layout_toLeftOf="@+id/iVDownload"
-            android:layout_height="wrap_content"
-            android:text="Play Local"
-            android:textAllCaps="false" />
-
-        <ImageView
-            android:id="@+id/iVDownload"
-            android:layout_alignParentRight="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:src="@mipmap/ic_download" />
-
-    </RelativeLayout>
-
 
     <GridView
         android:layout_width="match_parent"

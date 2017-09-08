@@ -39,7 +39,7 @@ public class KeyWriter {
     public static byte[] readByteToFileUnencryptedData(String serverFileUrl, File tempKeyPath) {
         try {
             tempKeyPath.mkdirs();
-            String videoId = getVideoIdFromUrl(serverFileUrl);
+            String videoId = HLSUtils.getVideoIdFromUrl(serverFileUrl);
             if (videoId != null) {
                 return FileUtils.readFileToByteArray(new File(tempKeyPath.getAbsolutePath())); // decrypting
             }
@@ -54,7 +54,7 @@ public class KeyWriter {
         try {
             File keyFile = new File(keyStoragePath);
             keyFile.mkdirs();
-            String videoId = getVideoIdFromUrl(serverFileUrl);
+            String videoId = HLSUtils.getVideoIdFromUrl(serverFileUrl);
             if (videoId != null) {
                 byte[] decrypt = decrypt(FileUtils.readFileToByteArray(new File(keyFile.getAbsolutePath() + "/" + videoId)));
                 Log.d(TAG, "readByteToFileEncryptedData: read key from file: " + Arrays.toString(decrypt));
@@ -70,7 +70,7 @@ public class KeyWriter {
         try {
             File keyFile = new File(keyStoragePath);
             keyFile.mkdirs();
-            String videoId = getVideoIdFromUrl(serverFileUrl);
+            String videoId = HLSUtils.getVideoIdFromUrl(serverFileUrl);
             if (videoId != null){
                 byte[] encrypt = encrypt(keyBytes);
                 if (encrypt != null) {
@@ -85,30 +85,7 @@ public class KeyWriter {
         }
     }
 
-    private static String getVideoIdFromUrl(String serverFileUrl) {
-        String videoId = null;
-        try {
-            Map<String, String> params = splitQuery(new URL(serverFileUrl));
-            if (params != null && params.size() > 0 && params.containsKey("videoId")) {
-                videoId = params.get("videoId");
-            }
-        } catch (UnsupportedEncodingException | MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return videoId;
-    }
 
-
-    private static Map<String, String> splitQuery(URL url) throws UnsupportedEncodingException {
-        Map<String, String> query_pairs = new LinkedHashMap<String, String>();
-        String query = url.getQuery();
-        String[] pairs = query.split("&");
-        for (String pair : pairs) {
-            int idx = pair.indexOf("=");
-            query_pairs.put(URLDecoder.decode(pair.substring(0, idx), "UTF-8"), URLDecoder.decode(pair.substring(idx + 1), "UTF-8"));
-        }
-        return query_pairs;
-    }
 
     private static byte[] encrypt(byte[] data) {
         try {

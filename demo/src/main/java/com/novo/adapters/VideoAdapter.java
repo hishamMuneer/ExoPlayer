@@ -35,7 +35,7 @@ public class VideoAdapter extends ArrayAdapter<VideoModel> {
     private ItemListener listener;
 
     public interface ItemListener {
-        void onItemClicked(VideoModel model);
+        void onVideoPlayClicked(VideoModel model);
         void onDownloadClicked(VideoModel model, ImageView ivDownload);
         void onDeleteClicked(File directory, ImageView ivDownload);
 
@@ -132,7 +132,7 @@ public class VideoAdapter extends ArrayAdapter<VideoModel> {
             @Override
             public void onClick(View v) {
                 if(listener != null)
-                    listener.onItemClicked(items.get(position));
+                    listener.onVideoPlayClicked(items.get(position));
             }
         });
 

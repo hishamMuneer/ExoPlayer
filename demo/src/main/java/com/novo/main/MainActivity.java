@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.exoplayer2.source.hls.HLSUtils;
 import com.google.android.exoplayer2.source.hls.KeyWriter;
 import com.google.android.exoplayer2.upstream.novo.TokenManager;
 import com.google.gson.Gson;
@@ -42,13 +44,10 @@ import com.novo.util.Utils;
 
 import static com.novo.util.Utils.TAG;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements VideoAdapter.ItemListener {
 
     private Button btnLogin;
-//    private ImageView iVDownload;
-//    private String videoId = "arc_single";
     private GridView lvAll;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,127 +58,15 @@ public class MainActivity extends Activity {
 
     private void initStuff() {
         btnLogin = (Button) findViewById(R.id.btnLogin);
-        Button btnLocal = (Button) findViewById(R.id.btnLocal);
-//        iVDownload = (ImageView) findViewById(R.id.iVDownload);
         lvAll = (GridView) findViewById(R.id.lvAll);
         ServerHit.JSONTask task = new ServerHit.JSONTask(this, TokenManager.getToken(), "GET", null, null, new ServerHit.ServiceHitResponseListener() {
             @Override
             public void onDone(final String response) {
                 Log.d(TAG, "onDone: " + response);
+                VideoAdapter adapter = new VideoAdapter(MainActivity.this, R.layout.row_videos_grid, getVideoModelsFromResponse(response));
+                adapter.setItemListener(MainActivity.this);
+                lvAll.setAdapter(adapter);
 
-                try {
-                    JSONArray array = new JSONArray(response);
-                    List<VideoModel> items = new ArrayList<>();
-                    for (int i = 0; i < array.length(); i++) {
-                        JSONObject jsonObject = array.getJSONObject(i);
-                        VideoModel model = new Gson().fromJson(jsonObject.toString(), VideoModel.class);
-                        items.add(model);
-                    }
-                    // hit server, get items and pass into adapter
-                    VideoAdapter adapter = new VideoAdapter(MainActivity.this, R.layout.row_videos_grid, items);
-                    adapter.setItemListener(new VideoAdapter.ItemListener() {
-                        @Override
-                        public void onItemClicked(final VideoModel model) {
-                            File dir = new File(Utils.getStorageDirectoryExtracts() + model.getVideoId());
-                            File[] file = dir.listFiles();
-                            if(Utils.isFolderPresent(dir)){
-                                // trying to find my file
-                                Log.d(TAG, "onItemClicked: " + ZipHelper.searchFile(file, null));
-                                ZipHelper.searchFile(file, new ZipHelper.FileListener() {
-                                    @Override
-                                    public void onFileSearchComplete(boolean fileFound, String fileToPlay) {
-                                        if(fileFound && !TextUtils.isEmpty(fileToPlay)) {
-                                            Intent intent = new Intent(getApplicationContext(), PlayerActivity.class);
-                                            intent.setData(Uri.parse(fileToPlay));
-                                            intent.setAction(PlayerActivity.ACTION_VIEW);
-                                            startActivity(intent);
-                                        } else {
-                                            Toast.makeText(MainActivity.this, "Unable to play local video, playing stream.", Toast.LENGTH_SHORT).show();
-                                            playMediaFromServer(model);
-                                        }
-                                    }
-                                });
-                            } else { // if folder is not present locally, play via server
-                                playMediaFromServer(model);
-                            }
-                        }
-
-                        @Override
-                        public void onDownloadClicked(VideoModel model, final ImageView ivDownload) {
-                            String serverFileUrl = EndPoints.getBaseUrl() + "VocabimateContentServer/webapi/video/download?videoId=" + model.getVideoId();
-                            // todo problem with zip file, hardcoded
-                            final String keyFileUrl = EndPoints.getBaseUrl() + "VocabimateKeyServer/webapi/keys/getKey?videoId=" + model.getVideoId();
-                            String videoId;
-                            try {
-                                Map<String, String> params = Utils.splitQuery(new URL(serverFileUrl));
-                                if(params != null && params.size() > 0 && params.containsKey("videoId")) {
-                                    videoId = params.get("videoId");
-                                } else {
-                                    Toast.makeText(MainActivity.this, "Video id not found", Toast.LENGTH_SHORT).show();
-                                    return;
-                                }
-                            } catch (UnsupportedEncodingException | MalformedURLException e) {
-                                e.printStackTrace();
-                                return;
-                            }
-                            // execute this when the downloader must be fired
-                            final File sourceZipFile = new File(Utils.getStorageDirectoryZips() + videoId);
-                            String fileNameWithOutExt = FilenameUtils.removeExtension(sourceZipFile.getName());
-                            final File targetDirectory = new File(Utils.getStorageDirectoryExtracts() + fileNameWithOutExt);
-                            targetDirectory.mkdir();
-
-                            final DownloadTask downloadTask = new DownloadTask(MainActivity.this, TokenManager.getToken(), sourceZipFile.getAbsolutePath(), new DownloadTask.DownloadTaskListener() {
-                                @Override
-                                public void onFileDownload() {
-                                    new ZipHelper.ZipTask(MainActivity.this, new ZipHelper.ZipTaskListener() {
-                                        @Override
-                                        public void onUnzipped(String fileToPlay) {
-                                            Log.d(TAG, "onUnzipped: " + fileToPlay);
-                                            ivDownload.setImageResource(R.mipmap.ic_download_complete);
-                                        }
-                                    }).execute(sourceZipFile, targetDirectory);
-                                }
-                            });
-                            downloadTask.execute(serverFileUrl);
-
-                            final File tempKeyPath = new File(Utils.getTempDirectoryExtracts() + videoId);
-                            final DownloadTask keyTask = new DownloadTask(MainActivity.this, TokenManager.getToken(), tempKeyPath.toString(), new DownloadTask.DownloadTaskListener() {
-                                @Override
-                                public void onFileDownload() {
-                                    KeyWriter.writeByteToFile(KeyWriter.readByteToFileUnencryptedData(keyFileUrl, tempKeyPath), keyFileUrl);
-                                }
-                            });
-                            keyTask.execute(keyFileUrl);
-//                            ServerHit.JSONTask keyTask = new ServerHit.JSONTask(MainActivity.this, "GET", null, null, new ServerHit.ServiceHitResponseListener() {
-//                                @Override
-//                                public void onDone(String response) {
-//                                    KeyWriter.writeByteToFile(response.getBytes(), keyFileUrl);
-//                                }
-//
-//                                @Override
-//                                public void onError(String error) {
-//                                    Log.e(TAG, "keyTask: " + error);
-//                                }
-//                            });
-//                            keyTask.setToken(TokenManager.getToken());
-//                            keyTask.execute(keyFileUrl);
-                        }
-
-                        @Override
-                        public void onDeleteClicked(File directory, ImageView ivDownload) {
-                            try {
-                                FileUtils.deleteDirectory(directory);
-                                ivDownload.setImageResource(R.mipmap.ic_download);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                Log.d(TAG, "onDeleteClicked: unable to delete directory" + e.getLocalizedMessage());
-                            }
-                        }
-                    });
-                    lvAll.setAdapter(adapter);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
 
             }
 
@@ -198,13 +85,13 @@ public class MainActivity extends Activity {
             }
         });
 
-        String url = EndPoints.getBaseUrl() +"VocabimateContentServer/webapi/video/fetchAll";
+        String url = EndPoints.getBaseUrl() + "VocabimateContentServer/webapi/video/fetchAll";
         task.execute(url);
 
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(!TextUtils.isEmpty(TokenManager.getToken())) {
+                if (!TextUtils.isEmpty(TokenManager.getToken())) {
                     TokenManager.setToken(null);
                     loginButtonTextUpdate();
                     return;
@@ -215,16 +102,25 @@ public class MainActivity extends Activity {
             }
         });
 
+    }
 
-
-
-        btnLocal.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
+    @NonNull
+    private List<VideoModel> getVideoModelsFromResponse(String response) {
+        List<VideoModel> items = new ArrayList<>();
+        if (TextUtils.isEmpty(response)) {
+            return items;
+        }
+        try {
+            JSONArray array = new JSONArray(response);
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject jsonObject = array.getJSONObject(i);
+                VideoModel model = new Gson().fromJson(jsonObject.toString(), VideoModel.class);
+                items.add(model);
             }
-        });
-
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return items;
     }
 
     private void playMediaFromServer(VideoModel model) {
@@ -249,7 +145,7 @@ public class MainActivity extends Activity {
 
             }
         });
-        streamTask.execute(EndPoints.getBaseUrl() +"VocabimateContentServer/webapi/video/stream?videoId=" + model.getVideoId());
+        streamTask.execute(EndPoints.getBaseUrl() + "VocabimateContentServer/webapi/video/stream?videoId=" + model.getVideoId());
     }
 
     @Override
@@ -265,10 +161,87 @@ public class MainActivity extends Activity {
     }
 
     private void loginButtonTextUpdate() {
-        if(!TextUtils.isEmpty(TokenManager.getToken())){
+        if (!TextUtils.isEmpty(TokenManager.getToken())) {
             btnLogin.setText("Logout");
         } else {
             btnLogin.setText("Login");
+        }
+    }
+
+    @Override
+    public void onVideoPlayClicked(final VideoModel model) {
+        File dir = new File(Utils.getStorageDirectoryExtracts() + model.getVideoId());
+        File[] file = dir.listFiles();
+        if (Utils.isFolderPresent(dir)) {
+            // trying to find my file
+            Log.d(TAG, "onVideoPlayClicked: " + ZipHelper.searchFile(file, null));
+            ZipHelper.searchFile(file, new ZipHelper.FileListener() {
+                @Override
+                public void onFileSearchComplete(boolean fileFound, String fileToPlay) {
+                    if (fileFound && !TextUtils.isEmpty(fileToPlay)) {
+                        Intent intent = new Intent(getApplicationContext(), PlayerActivity.class);
+                        intent.setData(Uri.parse(fileToPlay));
+                        intent.setAction(PlayerActivity.ACTION_VIEW);
+                        startActivity(intent);
+                    } else {
+                        Toast.makeText(MainActivity.this, "Unable to play local video, playing stream.", Toast.LENGTH_SHORT).show();
+                        playMediaFromServer(model);
+                    }
+                }
+            });
+        } else { // if folder is not present locally, play via server
+            playMediaFromServer(model);
+        }
+    }
+
+    @Override
+    public void onDownloadClicked(VideoModel model, final ImageView ivDownload) {
+        String serverFileUrl = EndPoints.getBaseUrl() + "VocabimateContentServer/webapi/video/download?videoId=" + model.getVideoId();
+        // todo problem with zip file, hardcoded
+        final String keyFileUrl = EndPoints.getBaseUrl() + "VocabimateKeyServer/webapi/keys/getKey?videoId=" + model.getVideoId();
+        String videoId = HLSUtils.getVideoIdFromUrl(serverFileUrl);
+        if(TextUtils.isEmpty(videoId)){
+            Toast.makeText(MainActivity.this, "Video id not found", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        // execute this when the downloader must be fired
+        final File sourceZipFile = new File(Utils.getStorageDirectoryZips() + videoId);
+        String fileNameWithOutExt = FilenameUtils.removeExtension(sourceZipFile.getName());
+        final File targetDirectory = new File(Utils.getStorageDirectoryExtracts() + fileNameWithOutExt);
+        targetDirectory.mkdir();
+
+        final DownloadTask downloadTask = new DownloadTask(MainActivity.this, TokenManager.getToken(), sourceZipFile.getAbsolutePath(), new DownloadTask.DownloadTaskListener() {
+            @Override
+            public void onFileDownload() {
+                new ZipHelper.ZipTask(MainActivity.this, new ZipHelper.ZipTaskListener() {
+                    @Override
+                    public void onUnzipped(String fileToPlay) {
+                        Log.d(TAG, "onUnzipped: " + fileToPlay);
+                        ivDownload.setImageResource(R.mipmap.ic_download_complete);
+                    }
+                }).execute(sourceZipFile, targetDirectory);
+            }
+        });
+        downloadTask.execute(serverFileUrl);
+
+        final File tempKeyPath = new File(Utils.getTempDirectoryExtracts() + videoId);
+        final DownloadTask keyTask = new DownloadTask(MainActivity.this, TokenManager.getToken(), tempKeyPath.toString(), new DownloadTask.DownloadTaskListener() {
+            @Override
+            public void onFileDownload() {
+                KeyWriter.writeByteToFile(KeyWriter.readByteToFileUnencryptedData(keyFileUrl, tempKeyPath), keyFileUrl);
+            }
+        });
+        keyTask.execute(keyFileUrl);
+    }
+
+    @Override
+    public void onDeleteClicked(File directory, ImageView ivDownload) {
+        try {
+            FileUtils.deleteDirectory(directory);
+            ivDownload.setImageResource(R.mipmap.ic_download);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d(TAG, "onDeleteClicked: unable to delete directory" + e.getLocalizedMessage());
         }
     }
 }
