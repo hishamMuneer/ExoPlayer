@@ -35,7 +35,7 @@ import com.google.android.exoplayer2.util.Util;
 @TargetApi(16)
 public final class MediaCodecInfo {
 
-  public static final String TAG = "MediaCodecInfo";
+  private static final String TAG = "MediaCodecInfo";
 
   /**
    * The name of the decoder.

@@ -77,7 +77,7 @@ import com.google.android.exoplayer2.video.MediaCodecVideoRenderer;
  * further injected components. This allows many sub-components to be individually replaced with
  * custom implementations. For example the default MediaSource implementations require one or more
  * {@link DataSource} factories to be injected via their constructors. By providing a custom factory
- * it's possible to load data from a non-standard source, or through a different network stack.
+ * it's possible to load data from a non-standard source, or through a different com.novo.network stack.
  *
  * <h3>Threading model</h3>
  * <p>The figure below shows ExoPlayer's threading model.</p>

@@ -133,8 +133,8 @@ public class CronetDataSource extends UrlRequest.Callback implements HttpDataSou
    * @param cronetEngine A CronetEngine.
    * @param executor The {@link java.util.concurrent.Executor} that will handle responses.
    *     This may be a direct executor (i.e. executes tasks on the calling thread) in order
-   *     to avoid a thread hop from Cronet's internal network thread to the response handling
-   *     thread. However, to avoid slowing down overall network performance, care must be taken
+   *     to avoid a thread hop from Cronet's internal com.novo.network thread to the response handling
+   *     thread. However, to avoid slowing down overall com.novo.network performance, care must be taken
    *     to make sure response handling is a fast operation when using a direct executor.
    * @param contentTypePredicate An optional {@link Predicate}. If a content type is rejected by the
    *     predicate then an {@link InvalidContentTypeException} is thrown from
@@ -151,8 +151,8 @@ public class CronetDataSource extends UrlRequest.Callback implements HttpDataSou
    * @param cronetEngine A CronetEngine.
    * @param executor The {@link java.util.concurrent.Executor} that will handle responses.
    *     This may be a direct executor (i.e. executes tasks on the calling thread) in order
-   *     to avoid a thread hop from Cronet's internal network thread to the response handling
-   *     thread. However, to avoid slowing down overall network performance, care must be taken
+   *     to avoid a thread hop from Cronet's internal com.novo.network thread to the response handling
+   *     thread. However, to avoid slowing down overall com.novo.network performance, care must be taken
    *     to make sure response handling is a fast operation when using a direct executor.
    * @param contentTypePredicate An optional {@link Predicate}. If a content type is rejected by the
    *     predicate then an {@link InvalidContentTypeException} is thrown from

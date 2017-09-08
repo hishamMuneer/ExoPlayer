@@ -362,7 +362,7 @@
   ([#1925](https://github.com/google/ExoPlayer/issues/1925)).
 * Fixed hiding of controls with use_controller="false"
   ([#1919](https://github.com/google/ExoPlayer/issues/1919)).
-* Improvements to Cronet network stack extension.
+* Improvements to Cronet com.novo.network stack extension.
 * Misc bug fixes.
 
 ### r2.0.2 ###
@@ -495,14 +495,14 @@ V2 release.
 
 ### r1.5.12 ###
 
-* Improvements to Cronet network stack extension.
+* Improvements to Cronet com.novo.network stack extension.
 * Fix bug in demo app introduced in r1.5.11 that caused L3 Widevine
   provisioning requests to fail.
 * Misc bugfixes.
 
 ### r1.5.11 ###
 
-* Cronet network stack extension.
+* Cronet com.novo.network stack extension.
 * HLS: Fix propagation of language for alternative audio renditions
   ([#1784](https://github.com/google/ExoPlayer/issues/1784)).
 * WebM: Support for subsample encryption.

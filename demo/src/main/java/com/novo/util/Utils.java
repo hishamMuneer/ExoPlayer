@@ -1,4 +1,4 @@
-package com.google.android.exoplayer2.demo;
+package com.novo.util;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
@@ -22,23 +22,36 @@ public class Utils {
 
     private static final String storageDirectoryZips = Environment.getExternalStorageDirectory() + "/voca/zips/";
     private static final String storageDirectoryExtracts = Environment.getExternalStorageDirectory() + "/voca/extracts/";
-    private static final String baseUrl = "http://35.154.11.202/";
-//    private static final String baseUrl = "http://192.168.0.94:8080/"; // local
+    private static final String tempDirectoryExtracts = Environment.getExternalStorageDirectory() + "/voca/temp/";
+    public static final String TAG = "Novo";
+
+    public static String getTempDirectoryExtracts() {
+        File tempDirectory = new File(tempDirectoryExtracts);
+        if (!tempDirectory.exists()) {
+            tempDirectory.mkdirs();
+        }
+        return tempDirectoryExtracts;
+    }
 
     public static String getStorageDirectoryZips() {
+        File fileZips = new File(storageDirectoryZips);
+        if (!fileZips.exists()) {
+            fileZips.mkdirs();
+        }
         return storageDirectoryZips;
     }
 
     public static String getStorageDirectoryExtracts() {
+        File fileExtracts = new File(storageDirectoryExtracts);
+        if (!fileExtracts.exists()) {
+            fileExtracts.mkdirs();
+        }
         return storageDirectoryExtracts;
     }
 
-    public static String getBaseUrl() {
-        return baseUrl;
-    }
 
     public static boolean isFolderPresent(File dir) {
-        if(dir.exists() && dir.isDirectory()) {
+        if (dir.exists() && dir.isDirectory()) {
             return true;
         } else {
             return false;

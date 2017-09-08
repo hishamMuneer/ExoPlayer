@@ -86,7 +86,7 @@ public final class ParsingLoadable<T> implements Loadable {
   }
 
   /**
-   * Returns the number of bytes loaded. In the case that the network response was compressed, the
+   * Returns the number of bytes loaded. In the case that the com.novo.network response was compressed, the
    * value returned is the size of the data <em>after</em> decompression.
    *
    * @return The number of bytes loaded.

@@ -1,4 +1,4 @@
-package com.google.android.exoplayer2.demo;
+package com.novo.main;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -8,6 +8,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.exoplayer2.upstream.novo.TokenManager;
+
+import com.novo.R;
+import com.novo.network.EndPoints;
+import com.novo.network.ServerHit;
+import com.novo.util.Utils;
 
 public class LoginActivity extends Activity {
 
@@ -34,9 +39,9 @@ public class LoginActivity extends Activity {
                     return;
                 }
 
-                String url = Utils.getBaseUrl() + "VocabimateLoginServer/webapi/myresource/login";
+                String url = EndPoints.getBaseUrl() + "VocabimateLoginServer/webapi/myresource/login";
                 String body = "username=" + etUserName.getText().toString()+"&password="+etPass.getText().toString();
-                ServerHit.JSONTask task = new ServerHit.JSONTask("POST", "application/x-www-form-urlencoded", body, new ServerHit.ServiceHitResponseListener() {
+                ServerHit.JSONTask task = new ServerHit.JSONTask(LoginActivity.this, TokenManager.getToken(), "POST", "application/x-www-form-urlencoded", body, new ServerHit.ServiceHitResponseListener() {
                     @Override
                     public void onDone(String response) {
                         TokenManager.setToken(response);

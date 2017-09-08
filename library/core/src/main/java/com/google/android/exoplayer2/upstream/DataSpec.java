@@ -35,13 +35,13 @@ public final class DataSpec {
   @IntDef(flag = true, value = {FLAG_ALLOW_GZIP, FLAG_ALLOW_CACHING_UNKNOWN_LENGTH})
   public @interface Flags {}
   /**
-   * Permits an underlying network stack to request that the server use gzip compression.
+   * Permits an underlying com.novo.network stack to request that the server use gzip compression.
    * <p>
    * Should not typically be set if the data being requested is already compressed (e.g. most audio
    * and video requests). May be set when requesting other data.
    * <p>
    * When a {@link DataSource} is used to request data with this flag set, and if the
-   * {@link DataSource} does make a network request, then the value returned from
+   * {@link DataSource} does make a com.novo.network request, then the value returned from
    * {@link DataSource#open(DataSpec)} will typically be {@link C#LENGTH_UNSET}. The data read from
    * {@link DataSource#read(byte[], int, int)} will be the decompressed data.
    */

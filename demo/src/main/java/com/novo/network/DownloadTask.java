@@ -1,4 +1,4 @@
-package com.google.android.exoplayer2.demo;
+package com.novo.network;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -6,7 +6,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.PowerManager;
+import android.text.TextUtils;
 import android.widget.Toast;
+
+import com.google.android.exoplayer2.upstream.novo.TokenManager;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -28,15 +31,17 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
     private final DownloadTaskListener listener;
     private Activity activity;
     private PowerManager.WakeLock mWakeLock;
+    private String token;
 
     public interface DownloadTaskListener {
         void onFileDownload();
     }
 
-    public DownloadTask(Activity activity, String filePath, DownloadTaskListener listener) {
+    public DownloadTask(Activity activity, String token, String filePath, DownloadTaskListener listener) {
         this.activity = activity;
         this.filePath = filePath;
         this.listener = listener;
+        this.token = token;
     }
 
     // declare the dialog as a member field of your activity
@@ -51,8 +56,11 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
         try {
             URL url = new URL(sUrl[0]);
             connection = (HttpURLConnection) url.openConnection();
-            connection.connect();
+            if(!TextUtils.isEmpty(token)) {
+                connection.setRequestProperty("token", TokenManager.getToken());
+            }
 
+            connection.connect();
             // expect HTTP 200 OK, so we don't mistakenly save error report
             // instead of the file
             if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {

@@ -1021,7 +1021,7 @@ public class DefaultTrackSelector extends MappingTrackSelector {
         && TextUtils.equals(language, Util.normalizeLanguageCode(format.language));
   }
 
-  // Viewport size util methods.
+  // Viewport size com.novo.util methods.
 
   private static List<Integer> getViewportFilteredTrackIndices(TrackGroup group, int viewportWidth,
       int viewportHeight, boolean orientationMayChange) {

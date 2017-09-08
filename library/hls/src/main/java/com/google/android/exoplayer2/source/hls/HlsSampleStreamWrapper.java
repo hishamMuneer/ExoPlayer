@@ -483,7 +483,7 @@ import java.util.LinkedList;
 
   @Override
   public void onLoadCompleted(Chunk loadable, long elapsedRealtimeMs, long loadDurationMs) {
-    chunkSource.onChunkLoadCompleted(loadable);
+    chunkSource.onChunkLoadCompleted(loadable, false);
     eventDispatcher.loadCompleted(loadable.dataSpec, loadable.type, trackType, loadable.trackFormat,
         loadable.trackSelectionReason, loadable.trackSelectionData, loadable.startTimeUs,
         loadable.endTimeUs, elapsedRealtimeMs, loadDurationMs, loadable.bytesLoaded());
@@ -515,6 +515,12 @@ import java.util.LinkedList;
     boolean isMediaChunk = isMediaChunk(loadable);
     boolean cancelable = !isMediaChunk || bytesLoaded == 0;
     boolean canceled = false;
+
+    if(chunkSource.onChunkLoadServedLocally(loadable, cancelable, error)){  // check if we can load the key of this video from saved keys, if yes, it dint fail.
+      onLoadCompleted(loadable, elapsedRealtimeMs, loadDurationMs);
+      return Loader.DONT_RETRY;
+    }
+
     if (chunkSource.onChunkLoadError(loadable, cancelable, error)) {
       if (isMediaChunk) {
         HlsMediaChunk removed = mediaChunks.removeLast();

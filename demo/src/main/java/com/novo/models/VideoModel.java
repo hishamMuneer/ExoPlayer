@@ -1,4 +1,4 @@
-package models;
+package com.novo.models;
 
 /**
  * Created by Hisham on 03/Sep/2017 - 17:08

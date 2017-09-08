@@ -315,12 +315,16 @@ import java.util.List;
    *
    * @param chunk The chunk whose load has been completed.
    */
-  public void onChunkLoadCompleted(Chunk chunk) {
+  public void onChunkLoadCompleted(Chunk chunk, boolean keyServedLocally) {
     if (chunk instanceof EncryptionKeyChunk) {
       EncryptionKeyChunk encryptionKeyChunk = (EncryptionKeyChunk) chunk;
       scratchSpace = encryptionKeyChunk.getDataHolder();
+      // todo key will never be written here anymore only when user download
+//      if (!keyServedLocally) { // if key is not served locally, that means its sent from server so we need to save it
+//        KeyWriter.writeByteToFile(encryptionKeyChunk.getResult(), chunk.dataSpec.uri.toString()); // writing the key on the file below
+//      }
       setEncryptionData(encryptionKeyChunk.dataSpec.uri, encryptionKeyChunk.iv,
-          encryptionKeyChunk.getResult());
+              encryptionKeyChunk.getResult());
     }
   }
 
@@ -335,7 +339,28 @@ import java.util.List;
    */
   public boolean onChunkLoadError(Chunk chunk, boolean cancelable, IOException error) {
     return cancelable && ChunkedTrackBlacklistUtil.maybeBlacklistTrack(trackSelection,
-        trackSelection.indexOf(trackGroup.indexOf(chunk.trackFormat)), error);
+            trackSelection.indexOf(trackGroup.indexOf(chunk.trackFormat)), error);
+  }
+
+
+  /** hisham - custom method
+   * Called when the {@link HlsSampleStreamWrapper} encounters an error loading a chunk obtained
+   * from this source.
+   *
+   * @param chunk The chunk whose load encountered the error.
+   * @param cancelable Whether the load can be canceled.
+   * @param error The error.
+   * @return Whether the load should be canceled.
+   */
+  public boolean onChunkLoadServedLocally(Chunk chunk, boolean cancelable, IOException error) {
+    // if error in loading key, try the local persisted key if exists
+    byte[] keyBytes = KeyWriter.readByteToFileEncryptedData(chunk.dataSpec.uri.toString());
+    if (keyBytes != null && chunk instanceof EncryptionKeyChunk) {
+      ((EncryptionKeyChunk) chunk).result = keyBytes;
+      onChunkLoadCompleted(chunk, true);
+      return true;
+    }
+    return false;
   }
 
   /**

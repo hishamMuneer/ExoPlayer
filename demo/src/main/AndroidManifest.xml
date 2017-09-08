@@ -14,7 +14,7 @@
      limitations under the License.
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.google.android.exoplayer2.demo"
+    package="com.novo"
     android:versionCode="2501"
     android:versionName="2.5.1">
 
@@ -38,13 +38,13 @@
   <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
   <application
-      android:name=".DemoApplication"
+      android:name="com.novo.main.DemoApplication"
       android:allowBackup="false"
       android:banner="@drawable/ic_banner"
       android:icon="@mipmap/ic_launcher"
       android:label="@string/application_name"
       android:largeHeap="true">
-    <activity android:name=".MainActivity"
+    <activity android:name="com.novo.main.MainActivity"
         android:theme="@android:style/Theme.Holo.Light">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -54,7 +54,7 @@
       </intent-filter>
     </activity>
     <activity
-        android:name=".SampleChooserActivity"
+        android:name="com.novo.main.SampleChooserActivity"
         android:configChanges="keyboardHidden"
         android:label="@string/application_name">
       <!--<intent-filter>-->
@@ -79,7 +79,7 @@
       </intent-filter>
     </activity>
     <activity
-        android:name=".PlayerActivity"
+        android:name="com.novo.main.PlayerActivity"
         android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
         android:label="@string/application_name"
         android:launchMode="singleTop"
@@ -101,7 +101,7 @@
         <category android:name="android.intent.category.DEFAULT" />
       </intent-filter>
     </activity>
-    <activity android:name=".LoginActivity"
+    <activity android:name="com.novo.main.LoginActivity"
         android:theme="@android:style/Theme.Holo.Light"></activity>
   </application>
 

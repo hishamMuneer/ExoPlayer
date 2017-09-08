@@ -135,7 +135,7 @@ public interface TrackSelection {
    * Returns the number of chunks that should be retained in the queue.
    * <p>
    * To avoid excessive re-buffering, implementations should normally return the size of the queue.
-   * An example of a case where a smaller value may be returned is if network conditions have
+   * An example of a case where a smaller value may be returned is if com.novo.network conditions have
    * improved dramatically, allowing chunks to be discarded and re-buffered in a track of
    * significantly higher quality. Discarding chunks may allow faster switching to a higher quality
    * track in this case.

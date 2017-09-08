@@ -1,9 +1,11 @@
-package com.google.android.exoplayer2.demo;
+package com.novo.network;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.novo.BuildConfig;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -13,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import static com.novo.util.Utils.TAG;
 
 /**
  * Created by Hisham on 31/Aug/2017 - 16:06 - https://stackoverflow.com/a/27050680
@@ -46,7 +49,7 @@ public class ZipHelper {
         @Override
         protected File doInBackground(File... params) {
             try {
-                ZipHelper.unzip(params[0], params[1]);
+                ZipHelper.unzip(params[0], params[1]); // params are source file and target file
                 return params[1];
             } catch (IOException e) {
                 e.printStackTrace();
@@ -63,10 +66,10 @@ public class ZipHelper {
 
 
     public interface ZipTaskListener {
-        void onUnzipped(String fileToPlay);
+        void onUnzipped(String targetDirectoryPath);
     }
 
-    public static void unzip(File zipFile, File targetDirectory) throws IOException {
+    private static void unzip(File zipFile, File targetDirectory) throws IOException {
         ZipInputStream zis = new ZipInputStream(new BufferedInputStream(new FileInputStream(zipFile)));
         try {
             ZipEntry ze;
@@ -95,17 +98,25 @@ public class ZipHelper {
             }
         } finally {
             zis.close();
+            if(!BuildConfig.DEBUG) { // if not debugging - delete zip file
+                String absolutePath = zipFile.getAbsolutePath();
+                if (zipFile.delete()) {
+                    Log.d(TAG, "zip file deleted: " + absolutePath);
+                } else {
+                    Log.d(TAG, "Error deleting zip file : " + absolutePath);
+                }
+            }
         }
     }
 
     /**
-     * This method searches the first file named
+     * This method searches the first file named prog_index.m3u8
      * @param file
      * @param listener
      * @return
      */
     public static boolean searchFile(File[] file, FileListener listener) {
-        if(file.length > 0) {
+        if(file != null && file.length > 0) {
             for (File f : file) {
                 String filenameToSearch = "prog_index.m3u8"; // file name to search in the folder you just unarchived
 //                if (f.isFile() && f.getName().equalsIgnoreCase(filenameToSearch)) {// f.getPath().endsWith("master.m3u8")) {
@@ -126,7 +137,6 @@ public class ZipHelper {
         return false;
     }
 
-    private static final String TAG = ZipHelper.class.getSimpleName();
 
     public interface FileListener{
         void onFileSearchComplete(boolean fileFound, String path);

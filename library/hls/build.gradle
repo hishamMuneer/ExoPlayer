@@ -38,6 +38,7 @@ dependencies {
     androidTestCompile 'com.google.dexmaker:dexmaker:' + dexmakerVersion
     androidTestCompile 'com.google.dexmaker:dexmaker-mockito:' + dexmakerVersion
     androidTestCompile 'org.mockito:mockito-core:' + mockitoVersion
+    compile 'commons-io:commons-io:2.5'
 }
 
 ext {

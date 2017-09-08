@@ -25,7 +25,7 @@ import java.util.List;
 
 /**
  * A bandwidth based adaptive {@link TrackSelection}, whose selected track is updated to be the one
- * of highest quality given the current network conditions and the state of the buffer.
+ * of highest quality given the current com.novo.network conditions and the state of the buffer.
  */
 public class AdaptiveTrackSelection extends BaseTrackSelection {
 
