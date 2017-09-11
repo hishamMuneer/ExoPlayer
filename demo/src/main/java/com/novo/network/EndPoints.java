@@ -5,8 +5,8 @@ package com.novo.network;
  */
 
 public class EndPoints {
-//    private static final String baseUrl = "http://35.154.11.202/";
-    private static final String baseUrl = "http://192.168.0.94:8080/";
+    private static final String baseUrl = "http://35.154.11.202/";
+//    private static final String baseUrl = "http://192.168.0.94:8080/";
     public static String getBaseUrl() {
         return baseUrl;
     }

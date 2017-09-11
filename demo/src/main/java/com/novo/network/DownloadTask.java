@@ -29,6 +29,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 
     private final String filePath;
     private final DownloadTaskListener listener;
+    private final String key;
     private Activity activity;
     private PowerManager.WakeLock mWakeLock;
     private String token;
@@ -37,11 +38,12 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
         void onFileDownload();
     }
 
-    public DownloadTask(Activity activity, String token, String filePath, DownloadTaskListener listener) {
+    public DownloadTask(Activity activity, String key, String token, String filePath, DownloadTaskListener listener) {
         this.activity = activity;
         this.filePath = filePath;
         this.listener = listener;
         this.token = token;
+        this.key = key;
     }
 
     // declare the dialog as a member field of your activity
@@ -111,44 +113,44 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        // take CPU lock to prevent CPU from going off if the user
-        // presses the power button during download
-        PowerManager pm = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
-        mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
-        mWakeLock.acquire();
-        // instantiate it within the onCreate method
-        mProgressDialog = new ProgressDialog(activity);
-        mProgressDialog.setMessage("Downloading video for offline use...");
-        mProgressDialog.setIndeterminate(true);
-        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
-        mProgressDialog.setCancelable(true);
-        mProgressDialog.show();
-
-        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                cancel(true);
-            }
-        });
+//        // take CPU lock to prevent CPU from going off if the user
+//        // presses the power button during download
+//        PowerManager pm = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
+//        mWakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, getClass().getName());
+//        mWakeLock.acquire();
+//        // instantiate it within the onCreate method
+//        mProgressDialog = new ProgressDialog(activity);
+//        mProgressDialog.setMessage("Downloading video for offline use...");
+//        mProgressDialog.setIndeterminate(true);
+//        mProgressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+//        mProgressDialog.setCancelable(true);
+//        mProgressDialog.show();
+//
+//        mProgressDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+//            @Override
+//            public void onCancel(DialogInterface dialog) {
+//                cancel(true);
+//            }
+//        });
     }
 
     @Override
     protected void onProgressUpdate(Integer... progress) {
         super.onProgressUpdate(progress);
-        // if we get here, length is known, now set indeterminate to false
-        mProgressDialog.setIndeterminate(false);
-        mProgressDialog.setMax(100);
-        mProgressDialog.setProgress(progress[0]);
+//        // if we get here, length is known, now set indeterminate to false
+//        mProgressDialog.setIndeterminate(false);
+//        mProgressDialog.setMax(100);
+//        mProgressDialog.setProgress(progress[0]);
     }
 
     @Override
     protected void onPostExecute(String result) {
-        mWakeLock.release();
-        mProgressDialog.dismiss();
-        if (result != null)
-            Toast.makeText(activity,"Download error: "+result, Toast.LENGTH_LONG).show();
-        else {
-            Toast.makeText(activity, "File downloaded", Toast.LENGTH_SHORT).show();
+//        mWakeLock.release();
+//        mProgressDialog.dismiss();
+        if (result != null) {
+            Toast.makeText(activity, "Unable to Download key - error: " + result, Toast.LENGTH_LONG).show();
+        } else {
+            Toast.makeText(activity, "Key downloaded", Toast.LENGTH_SHORT).show();
             listener.onFileDownload();
         }
     }

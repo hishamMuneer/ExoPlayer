@@ -54,6 +54,7 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
     private HomeActivity activity;
     private BroadcastReceiver receiver;
     private List<VideoModel> videoModelsList;
+    private VideoAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,23 +88,23 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
                         switch (downloadModel.getStatus()) {
                             case DOWNLOADING:
                                 if (downloadModel.getProgress() == -1) {
-                                    tvPercentage.setText("Downloading...");
+                                    tvPercentage.setText(R.string.downloading);
                                 } else {
                                     tvPercentage.setText(downloadModel.getProgress() + "%");
                                 }
                                 break;
                             case DOWNLOADED:
-                                tvPercentage.setText("Completed.");
+                                tvPercentage.setText(R.string.completed);
                                 break;
                             case UNZIPPING:
-                                tvPercentage.setText("Processing...");
+                                tvPercentage.setText(R.string.processing);
                                 break;
                             case UNZIPPED:
-                                tvPercentage.setText("Downloaded.");
-                                ivDownload.setImageResource(R.mipmap.ic_download_complete);
+                                tvPercentage.setText("");
+                                ivDownload.setImageResource(R.drawable.ic_delete_black_24dp);
                                 break;
                             case ERROR:
-                                tvPercentage.setText("Unable to download.");
+                                tvPercentage.setText(R.string.unable_to_download);
                                 break;
                         }
                         break;
@@ -129,7 +130,7 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
             public void onDone(final String response) {
                 Log.d(TAG, "onDone: " + response);
                 videoModelsList = getVideoModelsFromResponse(response);
-                VideoAdapter adapter = new VideoAdapter(activity, R.layout.row_videos_grid, videoModelsList);
+                adapter = new VideoAdapter(activity, R.layout.row_videos_grid, videoModelsList);
                 adapter.setItemListener(activity);
                 lvAll.setAdapter(adapter);
 
@@ -157,9 +158,10 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!TextUtils.isEmpty(TokenManager.getToken())) {
-                    TokenManager.setToken(null);
+                if (!TextUtils.isEmpty(TokenManager.getToken())) { // logging user out
+                    LogoutHelper.cleanup(activity);
                     loginButtonTextUpdate();
+                    refreshList();
                     return;
                 }
                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
@@ -168,6 +170,10 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
             }
         });
 
+    }
+
+    private void refreshList() {
+        adapter.notifyDataSetChanged();
     }
 
     @NonNull
@@ -236,9 +242,9 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
 
     @Override
     public void onVideoPlayClicked(final VideoModel model) {
-        File dir = new File(Utils.getStorageDirectoryExtracts() + model.getVideoId());
-        File[] file = dir.listFiles();
+        File dir = new File(new Utils(activity).getStorageDirectoryExtracts() + model.getVideoId());
         if (Utils.isFolderPresent(dir)) {
+            File[] file = dir.listFiles();
             // trying to find my file
             Log.d(TAG, "onVideoPlayClicked: " + ZipHelper.searchFile(file, null));
             ZipHelper.searchFile(file, new ZipHelper.FileListener() {
@@ -271,9 +277,9 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
             return;
         }
         // execute this when the downloader must be fired
-        final File sourceZipFile = new File(Utils.getStorageDirectoryZips() + videoId);
+        final File sourceZipFile = new File(new Utils(activity).getStorageDirectoryZips() + videoId);
         String fileNameWithOutExt = FilenameUtils.removeExtension(sourceZipFile.getName());
-        final File targetDirectory = new File(Utils.getStorageDirectoryExtracts() + fileNameWithOutExt);
+        final File targetDirectory = new File(new Utils(activity).getStorageDirectoryExtracts() + fileNameWithOutExt);
         targetDirectory.mkdir();
 
 
@@ -282,8 +288,8 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
                 .setVideoId(model.getVideoId())
                 .setVideoTitle(model.getName())
                 .setToken(TokenManager.getToken())
-//                .setLink("https://drmdemo-94ea7.firebaseapp.com/arc.zip")
-                .setLink(serverFileUrl)
+                .setLink("https://drmdemo-94ea7.firebaseapp.com/arc.zip") // todo hard code
+//                .setLink(serverFileUrl)
                 .setFilePath(sourceZipFile.getAbsolutePath())
                 .setTargetDirectoryPath(targetDirectory.getAbsolutePath())
                 .setCallBackIntent("progress_callback");
@@ -317,11 +323,13 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
 //        });
 //        downloadTask.execute(serverFileUrl);
 //
-        final File tempKeyPath = new File(Utils.getTempDirectoryExtracts() + videoId);
-        final DownloadTask keyTask = new DownloadTask(activity, TokenManager.getToken(), tempKeyPath.toString(), new DownloadTask.DownloadTaskListener() {
+        final File tempKeyFile = new File(new Utils(activity).getTempDirectoryExtracts() + videoId);
+        final DownloadTask keyTask = new DownloadTask(activity, "KEY", TokenManager.getToken(), tempKeyFile.getAbsolutePath(), new DownloadTask.DownloadTaskListener() {
             @Override
             public void onFileDownload() {
-                KeyWriter.writeByteToFile(KeyWriter.readByteToFileUnencryptedData(keyFileUrl, tempKeyPath), keyFileUrl);
+                KeyWriter writer = new KeyWriter(activity);
+                writer.writeByteToFile(writer.readByteToFileUnencryptedData(keyFileUrl, tempKeyFile), keyFileUrl);
+                writer.deleteTempKey(tempKeyFile);
             }
         });
         keyTask.execute(keyFileUrl);
@@ -331,7 +339,7 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
     public void onDeleteClicked(File directory, ImageView ivDownload) {
         try {
             FileUtils.deleteDirectory(directory);
-            ivDownload.setImageResource(R.mipmap.ic_download);
+            ivDownload.setImageResource(R.drawable.ic_file_download_black_24dp);
         } catch (IOException e) {
             e.printStackTrace();
             Log.d(TAG, "onDeleteClicked: unable to delete directory" + e.getLocalizedMessage());

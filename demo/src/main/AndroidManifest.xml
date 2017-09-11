@@ -56,9 +56,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".main.MainActivity"
-            android:theme="@android:style/Theme.Holo.Light"></activity>
-        <activity
             android:name=".main.SampleChooserActivity"
             android:configChanges="keyboardHidden"
             android:label="@string/application_name">

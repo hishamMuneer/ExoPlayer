@@ -21,21 +21,26 @@
     <item name="android:windowBackground">@android:color/black</item>
   </style>
 
+
+  <color name="primary">@color/md_blue_500</color>
+  <color name="primaryDark">@color/md_blue_700</color>
+  <color name="secondary">@color/md_pink_800</color>
+
   <!-- Base application theme. -->
   <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
     <!-- Customize your theme here. -->
     <item name="android:windowContentOverlay">@null</item>
-    <item name="colorPrimary">@color/md_blue_500</item>
-    <item name="colorPrimaryDark">@color/md_blue_700</item>
-    <item name="colorAccent">@color/md_yellow_500</item>
+    <item name="colorPrimary">@color/primary</item>
+    <item name="colorPrimaryDark">@color/primaryDark</item>
+    <item name="colorAccent">@color/secondary</item>
   </style>
 
   <style name="AppThemeLight" parent="Theme.AppCompat.Light">
     <!-- Customize your theme here. -->
     <item name="android:windowContentOverlay">@null</item>
-    <item name="colorPrimary">@color/md_blue_500</item>
-    <item name="colorPrimaryDark">@color/md_blue_700</item>
-    <item name="colorAccent">@color/md_yellow_500</item>
+    <item name="colorPrimary">@color/primary</item>
+    <item name="colorPrimaryDark">@color/primaryDark</item>
+    <item name="colorAccent">@color/secondary</item>
   </style>
 
   <!-- Base application theme. -->

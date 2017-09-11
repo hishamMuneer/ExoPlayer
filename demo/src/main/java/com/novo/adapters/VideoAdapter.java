@@ -76,12 +76,12 @@ public class VideoAdapter extends ArrayAdapter<VideoModel> {
         final ImageView ivDownload = (ImageView) v.findViewById(R.id.ivDownload);
         TextView tvTitle = (TextView) v.findViewById(R.id.tvTitle);
 
-         File dir = new File(Utils.getStorageDirectoryExtracts() + items.get(position).getVideoId());
+         File dir = new File(new Utils(activity).getStorageDirectoryExtracts() + items.get(position).getVideoId());
          File[] file = dir.listFiles();
         if(Utils.isFolderPresent(dir) && ZipHelper.searchFile(file, null)){
-            ivDownload.setImageResource(R.mipmap.ic_download_complete);
+            ivDownload.setImageResource(R.drawable.ic_delete_black_24dp);
         } else {
-            ivDownload.setImageResource(R.mipmap.ic_download);
+            ivDownload.setImageResource(R.drawable.ic_file_download_black_24dp);
         }
 
 
@@ -92,7 +92,7 @@ public class VideoAdapter extends ArrayAdapter<VideoModel> {
             @Override
             public void onClick(View v) {
                 if(listener != null) {
-                    final File dir = new File(Utils.getStorageDirectoryExtracts() + items.get(position).getVideoId());
+                    final File dir = new File(new Utils(activity).getStorageDirectoryExtracts() + items.get(position).getVideoId());
                     final File[] file = dir.listFiles();
                     if (Utils.isFolderPresent(dir) && ZipHelper.searchFile(file, null)) { // if file is present
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);

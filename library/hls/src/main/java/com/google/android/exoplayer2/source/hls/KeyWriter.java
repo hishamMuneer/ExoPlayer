@@ -124,4 +124,24 @@ public class KeyWriter {
         return new SecretKeySpec(keyValue, ALGO);
     }
 
+    public void deleteTempKey(File tempKeyFile) {
+        if(!BuildConfig.DEBUG) { // if not debugging - delete zip file
+            String absolutePath = tempKeyFile.getAbsolutePath();
+            if (tempKeyFile.delete()) {
+                Log.d(TAG, "zip file deleted: " + absolutePath);
+            } else {
+                Log.d(TAG, "Error deleting zip file : " + absolutePath);
+            }
+        }
+    }
+
+    public void deleteAllKeys() {
+        try {
+            File keyDirectory = new File(keyStoragePath);
+            FileUtils.deleteDirectory(keyDirectory);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Log.d(TAG, "onDeleteClicked: unable to delete directory" + e.getLocalizedMessage());
+        }
+    }
 }
