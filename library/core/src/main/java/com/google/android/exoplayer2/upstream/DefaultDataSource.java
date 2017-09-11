@@ -49,6 +49,11 @@ public final class DefaultDataSource implements DataSource {
   private static final String SCHEME_RTMP = "rtmp";
 
   private final Context context;
+
+  public Context getContext() {
+    return context;
+  }
+
   private final TransferListener<? super DataSource> listener;
 
   private final DataSource baseDataSource;

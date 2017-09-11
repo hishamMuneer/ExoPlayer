@@ -1,22 +1,15 @@
 package com.google.android.exoplayer2.source.hls;
 
 
-import android.os.Environment;
+import android.content.Context;
 import android.util.Log;
-import android.widget.Toast;
 
 import org.apache.commons.io.FileUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLDecoder;
 import java.security.Key;
 import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -29,14 +22,26 @@ import javax.crypto.spec.SecretKeySpec;
 
 public class KeyWriter {
 
-    private static final String keyStoragePath = Environment.getExternalStorageDirectory() + "/voca/keys/";
+    private final Context context;
+
+    public KeyWriter(Context context) {
+        this.context = context;
+        File externalFilesDir = context.getExternalFilesDir(null);
+        if (externalFilesDir == null) {
+            keyStoragePath = null;
+        } else {
+            keyStoragePath = externalFilesDir.getAbsolutePath() + "/voca/keys/";
+        }
+    }
+
+    private final String keyStoragePath;//  = Environment.getExternalStorageDirectory() + "/voca/keys/";
     private static final String TAG = KeyWriter.class.getSimpleName();
     private static final String ALGO = "AES";
-    private static final byte[] keyValue = new byte[] { 'T', 'h', 'e', 'B', 'e', 's', 't',
-            'S', 'e', 'c', 'r','e', 't', 'K', 'e', 'y' };
+    private static final byte[] keyValue = new byte[]{'T', 'h', 'e', 'B', 'e', 's', 't',
+            'S', 'e', 'c', 'r', 'e', 't', 'K', 'e', 'y'};
 
 
-    public static byte[] readByteToFileUnencryptedData(String serverFileUrl, File tempKeyPath) {
+    public byte[] readByteToFileUnencryptedData(String serverFileUrl, File tempKeyPath) {
         try {
             tempKeyPath.mkdirs();
             String videoId = HLSUtils.getVideoIdFromUrl(serverFileUrl);
@@ -50,15 +55,17 @@ public class KeyWriter {
     }
 
 
-    public static byte[] readByteToFileEncryptedData(String serverFileUrl) {
+    public byte[] readByteToFileEncryptedData(String serverFileUrl) {
         try {
-            File keyFile = new File(keyStoragePath);
-            keyFile.mkdirs();
-            String videoId = HLSUtils.getVideoIdFromUrl(serverFileUrl);
-            if (videoId != null) {
-                byte[] decrypt = decrypt(FileUtils.readFileToByteArray(new File(keyFile.getAbsolutePath() + "/" + videoId)));
-                Log.d(TAG, "readByteToFileEncryptedData: read key from file: " + Arrays.toString(decrypt));
-                return decrypt; // decrypting
+            if(keyStoragePath != null) {
+                File keyFile = new File(keyStoragePath);
+                keyFile.mkdirs();
+                String videoId = HLSUtils.getVideoIdFromUrl(serverFileUrl);
+                if (videoId != null) {
+                    byte[] decrypt = decrypt(FileUtils.readFileToByteArray(new File(keyFile.getAbsolutePath() + "/" + videoId)));
+                    Log.d(TAG, "readByteToFileEncryptedData: read key from file: " + Arrays.toString(decrypt));
+                    return decrypt; // decrypting
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -66,18 +73,20 @@ public class KeyWriter {
         return null;
     }
 
-    public static void writeByteToFile(byte[] keyBytes, String serverFileUrl) {
+    public void writeByteToFile(byte[] keyBytes, String serverFileUrl) {
         try {
-            File keyFile = new File(keyStoragePath);
-            keyFile.mkdirs();
-            String videoId = HLSUtils.getVideoIdFromUrl(serverFileUrl);
-            if (videoId != null){
-                byte[] encrypt = encrypt(keyBytes);
-                if (encrypt != null) {
-                    FileUtils.writeByteArrayToFile(new File(keyFile.getAbsolutePath() + "/" + videoId), encrypt);
-                    Log.d(TAG, "writeByteToFile: key written: " + Arrays.toString(keyBytes));
-                } else {
-                    Log.e(TAG, "writeByteToFile: after encryption data was null");
+            if(keyStoragePath != null) {
+                File keyFile = new File(keyStoragePath);
+                keyFile.mkdirs();
+                String videoId = HLSUtils.getVideoIdFromUrl(serverFileUrl);
+                if (videoId != null) {
+                    byte[] encrypt = encrypt(keyBytes);
+                    if (encrypt != null) {
+                        FileUtils.writeByteArrayToFile(new File(keyFile.getAbsolutePath() + "/" + videoId), encrypt);
+                        Log.d(TAG, "writeByteToFile: key written: " + Arrays.toString(keyBytes));
+                    } else {
+                        Log.e(TAG, "writeByteToFile: after encryption data was null");
+                    }
                 }
             }
         } catch (IOException e) {
@@ -86,8 +95,7 @@ public class KeyWriter {
     }
 
 
-
-    private static byte[] encrypt(byte[] data) {
+    private byte[] encrypt(byte[] data) {
         try {
             Key key = generateKey();
             Cipher c = Cipher.getInstance(ALGO);
@@ -100,19 +108,19 @@ public class KeyWriter {
         }
     }
 
-    private static byte[] decrypt(byte[] encryptedData) {
+    private byte[] decrypt(byte[] encryptedData) {
         try {
             Key key = generateKey();
             Cipher c = Cipher.getInstance(ALGO);
             c.init(Cipher.DECRYPT_MODE, key);
             return c.doFinal(encryptedData);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    private static Key generateKey() throws Exception {
+    private Key generateKey() throws Exception {
         return new SecretKeySpec(keyValue, ALGO);
     }
 

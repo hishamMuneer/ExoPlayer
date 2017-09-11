@@ -32,6 +32,7 @@ import com.google.android.exoplayer2.trackselection.BaseTrackSelection;
 import com.google.android.exoplayer2.trackselection.TrackSelection;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DataSpec;
+import com.google.android.exoplayer2.upstream.DefaultDataSource;
 import com.google.android.exoplayer2.util.TimestampAdjuster;
 import com.google.android.exoplayer2.util.UriUtil;
 import com.google.android.exoplayer2.util.Util;
@@ -354,12 +355,15 @@ import java.util.List;
    */
   public boolean onChunkLoadServedLocally(Chunk chunk, boolean cancelable, IOException error) {
     // if error in loading key, try the local persisted key if exists
-    byte[] keyBytes = KeyWriter.readByteToFileEncryptedData(chunk.dataSpec.uri.toString());
-    if (keyBytes != null && chunk instanceof EncryptionKeyChunk) {
-      ((EncryptionKeyChunk) chunk).result = keyBytes;
-      onChunkLoadCompleted(chunk, true);
-      return true;
-    }
+      if(mediaDataSource instanceof DefaultDataSource) {
+          KeyWriter writer = new KeyWriter(((DefaultDataSource) mediaDataSource).getContext()); // to get the context
+          byte[] keyBytes = writer.readByteToFileEncryptedData(chunk.dataSpec.uri.toString());
+          if (keyBytes != null && chunk instanceof EncryptionKeyChunk) {
+              ((EncryptionKeyChunk) chunk).result = keyBytes;
+              onChunkLoadCompleted(chunk, true);
+              return true;
+          }
+      }
     return false;
   }
 
