@@ -21,4 +21,25 @@
     <item name="android:windowBackground">@android:color/black</item>
   </style>
 
+  <!-- Base application theme. -->
+  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <!-- Customize your theme here. -->
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="colorPrimary">@color/md_blue_500</item>
+    <item name="colorPrimaryDark">@color/md_blue_700</item>
+    <item name="colorAccent">@color/md_yellow_500</item>
+  </style>
+
+  <style name="AppThemeLight" parent="Theme.AppCompat.Light">
+    <!-- Customize your theme here. -->
+    <item name="android:windowContentOverlay">@null</item>
+    <item name="colorPrimary">@color/md_blue_500</item>
+    <item name="colorPrimaryDark">@color/md_blue_700</item>
+    <item name="colorAccent">@color/md_yellow_500</item>
+  </style>
+
+  <!-- Base application theme. -->
+  <style name="AppThemeNoActionBar" parent="Theme.AppCompat.Light.NoActionBar"></style>
+
+
 </resources>

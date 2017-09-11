@@ -1,22 +1,38 @@
 package com.novo.main;
 
-import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.exoplayer2.source.hls.HLSUtils;
 import com.google.android.exoplayer2.source.hls.KeyWriter;
 import com.google.android.exoplayer2.upstream.novo.TokenManager;
 import com.google.gson.Gson;
+import com.novo.R;
+import com.novo.adapters.VideoAdapter;
+import com.novo.models.FileDownloadModel;
+import com.novo.models.VideoModel;
+import com.novo.network.DownloadTask;
+import com.novo.network.EndPoints;
+import com.novo.network.ServerHit;
+import com.novo.network.ZipHelper;
+import com.novo.services.DownloaderService;
+import com.novo.util.Utils;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -26,28 +42,84 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-
-import com.novo.R;
-import com.novo.adapters.VideoAdapter;
-import com.novo.models.VideoModel;
-import com.novo.network.DownloadTask;
-import com.novo.network.EndPoints;
-import com.novo.network.ServerHit;
-import com.novo.network.ZipHelper;
-import com.novo.util.Utils;
 
 import static com.novo.util.Utils.TAG;
 
-public class MainActivity extends Activity implements VideoAdapter.ItemListener {
+public class HomeActivity extends AppCompatActivity implements VideoAdapter.ItemListener {
 
     private Button btnLogin;
     private GridView lvAll;
+    private HomeActivity activity;
+    private BroadcastReceiver receiver;
+    private List<VideoModel> videoModelsList;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_home);
+        activity = HomeActivity.this;
+
+        initStuff();
+
+        mTextMessage = (TextView) findViewById(R.id.message);
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        // register a receiver for callbacks
+        IntentFilter filter = new IntentFilter("progress_callback");
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                //do something based on the intent's action
+                Bundle b = intent.getExtras();
+                FileDownloadModel downloadModel = (FileDownloadModel) b.getSerializable("fileDownloadModelReturned");
+                // could be used to update a progress bar or show info somewhere in the Activity
+                Log.d(TAG, "onReceive: PROGRESS HOME: " + downloadModel.getProgress() + "%");
+
+                for (int i = 0; i < lvAll.getAdapter().getCount(); i++) {
+                    View child = lvAll.getChildAt(i);
+                    if(videoModelsList.get(i).getVideoId().equalsIgnoreCase(downloadModel.getVideoId())) {
+                        TextView tvPercentage = (TextView) child.findViewById(R.id.tvPercentage);
+                        ImageView ivDownload = (ImageView) child.findViewById(R.id.ivDownload);
+
+                        switch (downloadModel.getStatus()) {
+                            case DOWNLOADING:
+                                if (downloadModel.getProgress() == -1) {
+                                    tvPercentage.setText("Downloading...");
+                                } else {
+                                    tvPercentage.setText(downloadModel.getProgress() + "%");
+                                }
+                                break;
+                            case DOWNLOADED:
+                                tvPercentage.setText("Completed.");
+                                break;
+                            case UNZIPPING:
+                                tvPercentage.setText("Processing...");
+                                break;
+                            case UNZIPPED:
+                                tvPercentage.setText("Downloaded.");
+                                ivDownload.setImageResource(R.mipmap.ic_download_complete);
+                                break;
+                            case ERROR:
+                                tvPercentage.setText("Unable to download.");
+                                break;
+                        }
+                        break;
+                    }
+                }
+
+            }
+        };
+        registerReceiver(receiver, filter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(receiver);
+        super.onDestroy();
+    }
 
     private void initStuff() {
         btnLogin = (Button) findViewById(R.id.btnLogin);
@@ -56,8 +128,9 @@ public class MainActivity extends Activity implements VideoAdapter.ItemListener 
             @Override
             public void onDone(final String response) {
                 Log.d(TAG, "onDone: " + response);
-                VideoAdapter adapter = new VideoAdapter(MainActivity.this, R.layout.row_videos_grid, getVideoModelsFromResponse(response));
-                adapter.setItemListener(MainActivity.this);
+                videoModelsList = getVideoModelsFromResponse(response);
+                VideoAdapter adapter = new VideoAdapter(activity, R.layout.row_videos_grid, videoModelsList);
+                adapter.setItemListener(activity);
                 lvAll.setAdapter(adapter);
 
 
@@ -177,7 +250,7 @@ public class MainActivity extends Activity implements VideoAdapter.ItemListener 
                         intent.setAction(PlayerActivity.ACTION_VIEW);
                         startActivity(intent);
                     } else {
-                        Toast.makeText(MainActivity.this, "Unable to play local video, playing stream.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(activity, "Unable to play local video, playing stream.", Toast.LENGTH_SHORT).show();
                         playMediaFromServer(model);
                     }
                 }
@@ -194,7 +267,7 @@ public class MainActivity extends Activity implements VideoAdapter.ItemListener 
         final String keyFileUrl = EndPoints.getBaseUrl() + "VocabimateKeyServer/webapi/keys/getKey?videoId=" + model.getVideoId();
         String videoId = HLSUtils.getVideoIdFromUrl(serverFileUrl);
         if(TextUtils.isEmpty(videoId)){
-            Toast.makeText(MainActivity.this, "Video id not found", Toast.LENGTH_SHORT).show();
+            Toast.makeText(activity, "Video id not found", Toast.LENGTH_SHORT).show();
             return;
         }
         // execute this when the downloader must be fired
@@ -203,22 +276,49 @@ public class MainActivity extends Activity implements VideoAdapter.ItemListener 
         final File targetDirectory = new File(Utils.getStorageDirectoryExtracts() + fileNameWithOutExt);
         targetDirectory.mkdir();
 
-        final DownloadTask downloadTask = new DownloadTask(MainActivity.this, TokenManager.getToken(), sourceZipFile.getAbsolutePath(), new DownloadTask.DownloadTaskListener() {
-            @Override
-            public void onFileDownload() {
-                new ZipHelper.ZipTask(MainActivity.this, new ZipHelper.ZipTaskListener() {
-                    @Override
-                    public void onUnzipped(String fileToPlay) {
-                        Log.d(TAG, "onUnzipped: " + fileToPlay);
-                        ivDownload.setImageResource(R.mipmap.ic_download_complete);
-                    }
-                }).execute(sourceZipFile, targetDirectory);
-            }
-        });
-        downloadTask.execute(serverFileUrl);
 
+
+        FileDownloadModel fileDownloadModel = new FileDownloadModel()
+                .setVideoId(model.getVideoId())
+                .setVideoTitle(model.getName())
+                .setToken(TokenManager.getToken())
+//                .setLink("https://drmdemo-94ea7.firebaseapp.com/arc.zip")
+                .setLink(serverFileUrl)
+                .setFilePath(sourceZipFile.getAbsolutePath())
+                .setTargetDirectoryPath(targetDirectory.getAbsolutePath())
+                .setCallBackIntent("progress_callback");
+
+        Intent intent = new Intent(activity, DownloaderService.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("fileDownloadModel", fileDownloadModel);
+//        bundle.putString("videoId", model.getVideoId());
+//        bundle.putString("videoTitle", model.getName());
+//        bundle.putString("token", TokenManager.getToken());
+//        bundle.putString("link", "https://drmdemo-94ea7.firebaseapp.com/arc.zip");
+//        bundle.putString("filePath", sourceZipFile.getAbsolutePath());
+//        bundle.putString("targetDirectoryPath", targetDirectory.getAbsolutePath());
+//        bundle.putString("CallbackString", "progress_callback");
+        startService(intent.putExtras(bundle));
+
+
+
+
+//        final DownloadTask downloadTask = new DownloadTask(activity, TokenManager.getToken(), sourceZipFile.getAbsolutePath(), new DownloadTask.DownloadTaskListener() {
+//            @Override
+//            public void onFileDownload() {
+//                new ZipHelper.ZipTask(activity, new ZipHelper.ZipTaskListener() {
+//                    @Override
+//                    public void onUnzipped(String fileToPlay) {
+//                        Log.d(TAG, "onUnzipped: " + fileToPlay);
+//                        ivDownload.setImageResource(R.mipmap.ic_download_complete);
+//                    }
+//                }).execute(sourceZipFile, targetDirectory);
+//            }
+//        });
+//        downloadTask.execute(serverFileUrl);
+//
         final File tempKeyPath = new File(Utils.getTempDirectoryExtracts() + videoId);
-        final DownloadTask keyTask = new DownloadTask(MainActivity.this, TokenManager.getToken(), tempKeyPath.toString(), new DownloadTask.DownloadTaskListener() {
+        final DownloadTask keyTask = new DownloadTask(activity, TokenManager.getToken(), tempKeyPath.toString(), new DownloadTask.DownloadTaskListener() {
             @Override
             public void onFileDownload() {
                 KeyWriter.writeByteToFile(KeyWriter.readByteToFileUnencryptedData(keyFileUrl, tempKeyPath), keyFileUrl);
@@ -237,4 +337,39 @@ public class MainActivity extends Activity implements VideoAdapter.ItemListener 
             Log.d(TAG, "onDeleteClicked: unable to delete directory" + e.getLocalizedMessage());
         }
     }
+
+
+    private TextView mTextMessage;
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            Intent intent = new Intent(activity, DownloaderService.class);
+            switch (item.getItemId()) {
+                case R.id.navigation_home:
+                    mTextMessage.setText(R.string.title_home);
+                    return true;
+                case R.id.navigation_dashboard:
+                    mTextMessage.setText(R.string.title_dashboard);
+                    return true;
+//                case R.id.navigation_notifications:
+//                    mTextMessage.setText(R.string.title_notifications);
+//                    return true;
+                case R.id.navigation_library:
+                    mTextMessage.setText(R.string.title_library);
+                    stopService(intent);
+                    return true;
+                case R.id.navigation_others:
+                    mTextMessage.setText(R.string.title_others);
+                    return true;
+            }
+            return false;
+        }
+
+    };
+
+
+
 }

@@ -18,91 +18,104 @@
     android:versionCode="2501"
     android:versionName="2.5.1">
 
-  <uses-sdk
-      android:minSdkVersion="16"
-      android:targetSdkVersion="25" />
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="25" />
 
-  <uses-permission android:name="android.permission.INTERNET" />
-  <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
-  <uses-feature
-      android:name="android.software.leanback"
-      android:required="false" />
-  <uses-feature
-      android:name="android.hardware.touchscreen"
-      android:required="false" />
+    <uses-feature
+        android:name="android.software.leanback"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.touchscreen"
+        android:required="false" />
 
-  <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-  <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
-  <application
-      android:name="com.novo.main.DemoApplication"
-      android:allowBackup="false"
-      android:banner="@drawable/ic_banner"
-      android:icon="@mipmap/ic_launcher"
-      android:label="@string/application_name"
-      android:largeHeap="true">
-    <activity android:name="com.novo.main.MainActivity"
-        android:theme="@android:style/Theme.Holo.Light">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-
-        <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
-        <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter>
-    </activity>
-    <activity
-        android:name="com.novo.main.SampleChooserActivity"
-        android:configChanges="keyboardHidden"
-        android:label="@string/application_name">
-      <!--<intent-filter>-->
-      <!--<action android:name="android.intent.action.MAIN" />-->
-
-      <!--<category android:name="android.intent.category.LAUNCHER" />-->
-      <!--<category android:name="android.intent.category.LEANBACK_LAUNCHER" />-->
-      <!--</intent-filter>-->
-      <intent-filter>
-        <action android:name="android.intent.action.VIEW" />
-
-        <category android:name="android.intent.category.DEFAULT" />
-        <category android:name="android.intent.category.BROWSABLE" />
-
-        <data android:scheme="http" />
-        <data android:scheme="https" />
-        <data android:scheme="content" />
-        <data android:scheme="asset" />
-        <data android:scheme="file" />
-        <data android:host="*" />
-        <data android:pathPattern=".*\\.exolist\\.json" />
-      </intent-filter>
-    </activity>
-    <activity
-        android:name="com.novo.main.PlayerActivity"
-        android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+    <application
+        android:name=".main.DemoApplication"
+        android:allowBackup="false"
+        android:banner="@drawable/ic_banner"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/application_name"
-        android:launchMode="singleTop"
-        android:theme="@style/PlayerTheme">
-      <intent-filter>
-        <action android:name="com.google.android.exoplayer.demo.action.VIEW" />
+        android:largeHeap="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".main.HomeActivity"
+            android:label="@string/application_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
-        <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".main.MainActivity"
+            android:theme="@android:style/Theme.Holo.Light"></activity>
+        <activity
+            android:name=".main.SampleChooserActivity"
+            android:configChanges="keyboardHidden"
+            android:label="@string/application_name">
 
-        <data android:scheme="http" />
-        <data android:scheme="https" />
-        <data android:scheme="content" />
-        <data android:scheme="asset" />
-        <data android:scheme="file" />
-      </intent-filter>
-      <intent-filter>
-        <action android:name="com.google.android.exoplayer.demo.action.VIEW_LIST" />
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
 
-        <category android:name="android.intent.category.DEFAULT" />
-      </intent-filter>
-    </activity>
-    <activity android:name="com.novo.main.LoginActivity"
-        android:theme="@android:style/Theme.Holo.Light"></activity>
-  </application>
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- <category android:name="android.intent.category.LEANBACK_LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="content" />
+                <data android:scheme="asset" />
+                <data android:scheme="file" />
+                <data android:host="*" />
+                <data android:pathPattern=".*\\.exolist\\.json" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".main.PlayerActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:label="@string/application_name"
+            android:launchMode="singleTop"
+            android:theme="@style/PlayerTheme">
+            <intent-filter>
+                <action android:name="com.google.android.exoplayer.demo.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+
+                <data android:scheme="http" />
+                <data android:scheme="https" />
+                <data android:scheme="content" />
+                <data android:scheme="asset" />
+                <data android:scheme="file" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.google.android.exoplayer.demo.action.VIEW_LIST" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".main.LoginActivity"
+            android:theme="@android:style/Theme.Holo.Light" />
+
+        <service
+            android:name=".services.DownloaderService"
+            android:enabled="true"
+            android:exported="false"></service>
+    </application>
 
 </manifest>

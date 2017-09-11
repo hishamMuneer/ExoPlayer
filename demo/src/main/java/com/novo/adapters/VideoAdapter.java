@@ -56,6 +56,12 @@ public class VideoAdapter extends ArrayAdapter<VideoModel> {
         this.items = objects;
     }
 
+    @Nullable
+    @Override
+    public VideoModel getItem(int position) {
+        return super.getItem(position);
+    }
+
     @NonNull
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {

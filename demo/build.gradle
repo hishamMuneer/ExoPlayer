@@ -22,6 +22,7 @@ android {
         minSdkVersion 16
         targetSdkVersion project.ext.targetSdkVersion
         applicationId = "com.novo.player"
+        vectorDrawables.useSupportLibrary = true
     }
 
     buildTypes {
@@ -52,14 +53,17 @@ dependencies {
     compile project(modulePrefix + 'library-hls')
     compile project(modulePrefix + 'library-smoothstreaming')
     compile project(modulePrefix + 'library-ui')
-    compile 'commons-io:commons-io:2.5'
-    compile 'com.google.code.gson:gson:2.8.1'
-    compile 'com.github.bumptech.glide:glide:4.0.0'
-    compile 'com.android.support:support-v4:25.4.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
     withExtensionsCompile project(path: modulePrefix + 'extension-ffmpeg')
     withExtensionsCompile project(path: modulePrefix + 'extension-flac')
     withExtensionsCompile project(path: modulePrefix + 'extension-ima')
     withExtensionsCompile project(path: modulePrefix + 'extension-opus')
     withExtensionsCompile project(path: modulePrefix + 'extension-vp9')
+    compile 'commons-io:commons-io:2.5'
+    compile 'com.google.code.gson:gson:2.8.1'
+    compile 'com.github.bumptech.glide:glide:4.0.0'
+    compile 'com.android.support:support-v4:25.4.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:support-vector-drawable:25.3.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
 }

@@ -18,15 +18,23 @@
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="15dp"
         android:gravity="center_vertical"
-        android:layout_marginStart="15dp"
-        android:layout_toRightOf="@+id/ivThumb"
         android:text="TextView"
+        android:layout_alignTop="@+id/ivDownload"
         android:layout_toLeftOf="@+id/ivDownload"
-        android:layout_toStartOf="@+id/ivDownload"
-        android:layout_alignParentTop="true"
-        android:layout_alignBottom="@+id/ivDownload" />
+        android:layout_toRightOf="@+id/ivThumb"
+        android:layout_toEndOf="@+id/ivThumb" />
+
+    <TextView
+        android:id="@+id/tvPercentage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="percentage"
+        android:layout_below="@+id/tvTitle"
+        android:layout_toLeftOf="@+id/ivDownload"
+        android:layout_alignLeft="@+id/tvTitle"
+        android:layout_alignStart="@+id/tvTitle" />
 
     <ImageView
         android:id="@+id/ivDownload"
