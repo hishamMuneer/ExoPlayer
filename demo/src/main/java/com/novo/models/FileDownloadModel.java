@@ -1,5 +1,7 @@
 package com.novo.models;
 
+import android.text.TextUtils;
+
 import java.io.Serializable;
 
 /**
@@ -9,7 +11,7 @@ import java.io.Serializable;
 public class FileDownloadModel implements Serializable {
 
     public enum Status {
-        DOWNLOADING, DOWNLOADED, UNZIPPING, UNZIPPED, ERROR
+        DOWNLOADING, DOWNLOADED, UNZIPPING, UNZIPPED, CANCELLED, ERROR
     }
 
     private String videoId;
@@ -104,5 +106,15 @@ public class FileDownloadModel implements Serializable {
     public FileDownloadModel setCallBackIntent(String callBackIntent) {
         this.callBackIntent = callBackIntent;
         return this;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        FileDownloadModel model = (FileDownloadModel) obj;
+        if(!TextUtils.isEmpty(videoId) && videoId.equalsIgnoreCase(model.getVideoId()) &&
+                !TextUtils.isEmpty(videoTitle) && videoTitle.equalsIgnoreCase(model.getVideoTitle())){
+            return true;
+        }
+        return super.equals(obj);
     }
 }

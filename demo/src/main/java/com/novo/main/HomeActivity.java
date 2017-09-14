@@ -1,5 +1,6 @@
 package com.novo.main;
 
+import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -11,6 +12,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -73,6 +75,7 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                long startTime = System.currentTimeMillis();
                 //do something based on the intent's action
                 Bundle b = intent.getExtras();
                 FileDownloadModel downloadModel = (FileDownloadModel) b.getSerializable("fileDownloadModelReturned");
@@ -81,8 +84,8 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
 
                 for (int i = 0; i < lvAll.getAdapter().getCount(); i++) {
                     View child = lvAll.getChildAt(i);
-                    if(videoModelsList.get(i).getVideoId().equalsIgnoreCase(downloadModel.getVideoId())) {
-                        TextView tvPercentage = (TextView) child.findViewById(R.id.tvPercentage);
+                    if (child != null && videoModelsList.get(i).getVideoId().equalsIgnoreCase(downloadModel.getVideoId())) {
+                        TextView tvPercentage = (TextView) child.findViewById(R.id.tvPercentage); // todo fix getting a crash here sometimes null pointer
                         ImageView ivDownload = (ImageView) child.findViewById(R.id.ivDownload);
 
                         switch (downloadModel.getStatus()) {
@@ -106,11 +109,14 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
                             case ERROR:
                                 tvPercentage.setText(R.string.unable_to_download);
                                 break;
+                            case CANCELLED:
+                                tvPercentage.setText("");
+                                break;
                         }
                         break;
                     }
                 }
-
+                Log.d(TAG, "onReceive: Time taken to search views in videoModelsList = " + (System.currentTimeMillis() - startTime) + " ms");
             }
         };
         registerReceiver(receiver, filter);
@@ -127,8 +133,55 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
         lvAll = (GridView) findViewById(R.id.lvAll);
         ServerHit.JSONTask task = new ServerHit.JSONTask(this, TokenManager.getToken(), "GET", null, null, new ServerHit.ServiceHitResponseListener() {
             @Override
-            public void onDone(final String response) {
+            public void onDone(String response) {
                 Log.d(TAG, "onDone: " + response);
+                response = "[\n" +
+                        "  {\n" +
+                        "    \"thumbnail\": \"http://35.154.11.202/VocabimateContentServer/thumbnails/thumbnail.jpg\",\n" +
+                        "    \"name\": \"Encrypted Stream - Open Policy\",\n" +
+                        "    \"videoId\": \"Gear_640x3642340_750k_open\"\n" +
+                        "  },\n" +
+                        "  {\n" +
+                        "    \"thumbnail\": \"http://35.154.11.202/VocabimateContentServer/thumbnails/thumbnail.jpg\",\n" +
+                        "    \"name\": \"Encrypted Stream - Token Auth policy\",\n" +
+                        "    \"videoId\": \"Gear_640x3612340_750k_auth\"\n" +
+                        "  },\n" +
+                        "  {\n" +
+                        "    \"thumbnail\": \"http://35.154.11.202/VocabimateContentServer/thumbnails/thumbnail.jpg\",\n" +
+                        "    \"name\": \"Gear\",\n" +
+                        "    \"videoId\": \"5WT9g212m4outw\"\n" +
+                        "  },\n" +
+                        "  {\n" +
+                        "    \"thumbnail\": \"http://35.154.11.202/VocabimateContentServer/thumbnails/thumbnail.jpg\",\n" +
+                        "    \"name\": \"Encrypted Stream - Open Policy\",\n" +
+                        "    \"videoId\": \"Gear_640x369870_750k_open\"\n" +
+                        "  },\n" +
+                        "  {\n" +
+                        "    \"thumbnail\": \"http://35.154.11.202/VocabimateContentServer/thumbnails/thumbnail.jpg\",\n" +
+                        "    \"name\": \"Encrypted Stream - Token Auth policy\",\n" +
+                        "    \"videoId\": \"Gear_640x8360_750k_auth\"\n" +
+                        "  },\n" +
+                        "  {\n" +
+                        "    \"thumbnail\": \"http://35.154.11.202/VocabimateContentServer/thumbnails/thumbnail.jpg\",\n" +
+                        "    \"name\": \"Gear\",\n" +
+                        "    \"videoId\": \"5WT9gm654outw\"\n" +
+                        "  },\n" +
+                        "  {\n" +
+                        "    \"thumbnail\": \"http://35.154.11.202/VocabimateContentServer/thumbnails/thumbnail.jpg\",\n" +
+                        "    \"name\": \"Encrypted Stream - Open Policy\",\n" +
+                        "    \"videoId\": \"Gear_54640x360_750k_open\"\n" +
+                        "  },\n" +
+                        "  {\n" +
+                        "    \"thumbnail\": \"http://35.154.11.202/VocabimateContentServer/thumbnails/thumbnail.jpg\",\n" +
+                        "    \"name\": \"Encrypted Stream - Token Auth policy\",\n" +
+                        "    \"videoId\": \"Gear_63440x360_750k_auth\"\n" +
+                        "  },\n" +
+                        "  {\n" +
+                        "    \"thumbnail\": \"http://35.154.11.202/VocabimateContentServer/thumbnails/thumbnail.jpg\",\n" +
+                        "    \"name\": \"Gear\",\n" +
+                        "    \"videoId\": \"5WT9gm234outw\"\n" +
+                        "  }\n" +
+                        "]";
                 videoModelsList = getVideoModelsFromResponse(response);
                 adapter = new VideoAdapter(activity, R.layout.row_videos_grid, videoModelsList);
                 adapter.setItemListener(activity);
@@ -224,12 +277,6 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
     protected void onResume() {
         super.onResume();
         loginButtonTextUpdate();
-//        File dir = new File(storageDirectoryZips + videoId);
-//        if(isFolderPresent(dir)){
-//            iVDownload.setImageResource(R.mipmap.ic_download_complete);
-//        } else {
-//            iVDownload.setImageResource(R.mipmap.ic_download);
-//        }
     }
 
     private void loginButtonTextUpdate() {
@@ -304,10 +351,7 @@ public class HomeActivity extends AppCompatActivity implements VideoAdapter.Item
 //        bundle.putString("filePath", sourceZipFile.getAbsolutePath());
 //        bundle.putString("targetDirectoryPath", targetDirectory.getAbsolutePath());
 //        bundle.putString("CallbackString", "progress_callback");
-        startService(intent.putExtras(bundle));
-
-
-
+        startService(intent.putExtras(bundle)); // todo uncomment
 
 //        final DownloadTask downloadTask = new DownloadTask(activity, TokenManager.getToken(), sourceZipFile.getAbsolutePath(), new DownloadTask.DownloadTaskListener() {
 //            @Override

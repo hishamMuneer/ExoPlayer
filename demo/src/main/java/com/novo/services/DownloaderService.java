@@ -1,6 +1,5 @@
 package com.novo.services;
 
-import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
@@ -25,6 +24,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -40,31 +41,78 @@ public class DownloaderService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        Intent notificationIntent = new Intent(this, HomeActivity.class);
-
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                notificationIntent, 0);
+                new Intent(this, HomeActivity.class), 0);
+
+        PendingIntent dismissPendingIntent = PendingIntent.getBroadcast(this, (int) System.currentTimeMillis(),
+                new Intent(this, StopServiceReceiver.class), PendingIntent.FLAG_CANCEL_CURRENT);
 
         builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle("Downloading...")
+                .setContentTitle(getString(R.string.downloading))
                 .setContentIntent(pendingIntent);
+        builder.addAction(R.drawable.ic_cancel_black_24dp, "Cancel", dismissPendingIntent);
 //        Notification notification = builder.build();
 //        startForeground(1337, notification);
     }
 
+    private boolean cancelled = false; // means cancel everything
+    private boolean isDownloading = false;
+    private final List<FileDownloadModel> fileDownloadList = new ArrayList<>();
+    private int counter = 0;
+    private Thread thread;
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && intent.hasExtra("fileDownloadModel")) {
             final FileDownloadModel fileDownloadModel = (FileDownloadModel) intent.getSerializableExtra("fileDownloadModel");
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    startDownload(fileDownloadModel, builder);
-                }
-            }).start();
+            if(!fileDownloadList.contains(fileDownloadModel)){
+                fileDownloadList.add(fileDownloadModel);
+            }
+
+            if(thread == null || !thread.isAlive()) { // if thread is not running, start it. to maintain only one background thread is running at all time.
+                thread = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        synchronized (fileDownloadList) { // avoiding race condition
+                            while (fileDownloadList.size() > 0) {
+                                Log.d(TAG, "service while loop counter : " + ++counter);
+                                if (fileDownloadList.size() > 0) {
+                                    if (!isDownloading) {
+                                        isDownloading = true;
+                                        startDownload(fileDownloadList.get(0), builder);
+                                    }
+                                } else {
+                                    stopEverything(false); // stop the service as nothing to download
+                                }
+                                try {
+                                    Thread.sleep(1000);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            if (!isDownloading) {
+                                stopEverything(false);
+                            }
+                        }
+                    }
+                });
+                thread.start();
+            }
+
+            Log.d(TAG, "Thread Information: " + thread.toString());
+
         }
-        return super.onStartCommand(intent, flags, startId);
+        return START_REDELIVER_INTENT;
+    }
+
+    private void stopEverything(boolean fromDestroy) {
+        cancelled = true;
+        fileDownloadList.clear();
+        isDownloading = false;
+        if(!fromDestroy) {
+            stopSelf();
+        }
     }
 
     @Override
@@ -104,11 +152,12 @@ public class DownloaderService extends Service {
             int count;
             int updateCounter = 0;
             while ((count = input.read(data)) != -1) {
-//                // allow canceling with back button
-//                if (isCancelled()) {
-//                    input.close();
-//                    return null;
-//                }
+                // allow canceling with back button
+                if (isCancelled()) {
+                    input.close();
+                    updateProgressInNotification(fileDownloadModel.setStatus(FileDownloadModel.Status.CANCELLED), builder, fileLength, total);
+                    return null;
+                }
                 total += count;
                 updateCounter++; // counter for updating progress
                 if (updateCounter % 200 == 0) {
@@ -124,7 +173,7 @@ public class DownloaderService extends Service {
             updateProgressInNotification(fileDownloadModel.setStatus(FileDownloadModel.Status.UNZIPPING), builder, fileLength, total);
             unzip(new File(fileDownloadModel.getFilePath()), new File(fileDownloadModel.getTargetDirectoryPath()));
             updateProgressInNotification(fileDownloadModel.setStatus(FileDownloadModel.Status.UNZIPPED), builder, fileLength, total);
-
+            fileDownloadList.remove(fileDownloadModel); // removing from list
         } catch (Exception e) {
             sendCallback(fileDownloadModel.setProgress(-1).setStatus(FileDownloadModel.Status.ERROR));
             return e.toString();
@@ -134,7 +183,6 @@ public class DownloaderService extends Service {
             builder.setContentText("Download complete");
             // Removes the progress bar
 //                    builder.setProgress(0,0,false);
-            stopSelf();
             try {
                 if (output != null)
                     output.close();
@@ -201,8 +249,14 @@ public class DownloaderService extends Service {
             long totalMB = fileLength / (1024 * 1024);
             long currentMB = total / (1024 * 1024);
             builder.setProgress(100, percentage, false);
-            builder.setContentText(percentage + "%")
-                    .setContentInfo(currentMB + "MB / " + totalMB + "MB");
+
+            if(fileDownloadList.size() > 1){
+                int queue = fileDownloadList.size() - 1;
+                builder.setContentText(queue + " more " + ((queue == 1) ? "file" : "files") + " in queue.");
+            } else {
+                builder.setContentText(percentage + "%");
+            }
+                builder.setContentInfo(currentMB + "MB / " + totalMB + "MB");
         } else {
             builder.setProgress(100, 0, true);
         }
@@ -211,11 +265,34 @@ public class DownloaderService extends Service {
         startForeground(1337, builder.build());
     }
 
-    private void sendCallback(FileDownloadModel fileDownloadModel) {
-        Intent i = new Intent(fileDownloadModel.getCallBackIntent());
-        i.putExtra("fileDownloadModelReturned", fileDownloadModel);
+    private void sendCallback(FileDownloadModel downloadModel) {
+        switch (downloadModel.getStatus()) {
+            case DOWNLOADING:
+                break;
+            case DOWNLOADED:
+                break;
+            case UNZIPPING:
+                break;
+            case UNZIPPED:
+            case ERROR:
+                fileDownloadList.remove(downloadModel); // removing from list
+                isDownloading = false;
+                break;
+        }
+
+        Intent i = new Intent(downloadModel.getCallBackIntent());
+        i.putExtra("fileDownloadModelReturned", downloadModel);
         sendBroadcast(i);
     }
 
 
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        stopEverything(true);
+    }
 }

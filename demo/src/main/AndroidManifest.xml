@@ -113,6 +113,11 @@
             android:name=".services.DownloaderService"
             android:enabled="true"
             android:exported="false"></service>
+
+        <receiver android:name=".services.StopServiceReceiver"
+            android:enabled="true"
+            android:process=":remote"/>
+
     </application>
 
 </manifest>

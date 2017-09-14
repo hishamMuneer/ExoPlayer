@@ -20,6 +20,7 @@ import java.io.IOException;
 public class Utils {
 
     private final Context context;
+    private final String pathForDownloadManager = "/voca/zips/";
 
     public Utils(Context context) {
         this.context = context;
@@ -105,4 +106,7 @@ public class Utils {
 
     }
 
+    public String getPathForDownloadManager() {
+        return pathForDownloadManager;
+    }
 }

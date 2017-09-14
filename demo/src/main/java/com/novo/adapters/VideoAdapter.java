@@ -33,6 +33,7 @@ public class VideoAdapter extends ArrayAdapter<VideoModel> {
     private final int resource;
     private final List<VideoModel> items;
     private ItemListener listener;
+    private final LayoutInflater inflater;
 
     public interface ItemListener {
         void onVideoPlayClicked(VideoModel model);
@@ -54,6 +55,7 @@ public class VideoAdapter extends ArrayAdapter<VideoModel> {
         this.activity = activity;
         this.resource = resource;
         this.items = objects;
+        inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
     @Nullable
@@ -66,29 +68,34 @@ public class VideoAdapter extends ArrayAdapter<VideoModel> {
     @Override
     public View getView(final int position, @Nullable View convertView, @NonNull ViewGroup parent) {
 
-        View v = convertView;
-//        if (v == null) {
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        v = inflater.inflate(resource, parent, false);
-//        }
-
-        ImageView ivThumb = (ImageView) v.findViewById(R.id.ivThumb);
-        final ImageView ivDownload = (ImageView) v.findViewById(R.id.ivDownload);
-        TextView tvTitle = (TextView) v.findViewById(R.id.tvTitle);
-
-         File dir = new File(new Utils(activity).getStorageDirectoryExtracts() + items.get(position).getVideoId());
-         File[] file = dir.listFiles();
-        if(Utils.isFolderPresent(dir) && ZipHelper.searchFile(file, null)){
-            ivDownload.setImageResource(R.drawable.ic_delete_black_24dp);
+        final ViewHolder viewHolder;
+        if (convertView == null) {
+            viewHolder = new ViewHolder();
+            convertView = inflater.inflate(resource, parent, false);
+            viewHolder.ivThumb = (ImageView) convertView.findViewById(R.id.ivThumb);
+            viewHolder.ivDownload = (ImageView) convertView.findViewById(R.id.ivDownload);
+            viewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
+            viewHolder.tvPercentage = (TextView) convertView.findViewById(R.id.tvPercentage);
+            convertView.setTag(viewHolder);
         } else {
-            ivDownload.setImageResource(R.drawable.ic_file_download_black_24dp);
+            viewHolder = (ViewHolder) convertView.getTag();
+        }
+
+        viewHolder.tvPercentage.setText("");
+
+        File dir = new File(new Utils(activity).getStorageDirectoryExtracts() + items.get(position).getVideoId());
+        File[] file = dir.listFiles();
+        if(Utils.isFolderPresent(dir) && ZipHelper.searchFile(file, null)){
+            viewHolder.ivDownload.setImageResource(R.drawable.ic_delete_black_24dp);
+        } else {
+            viewHolder.ivDownload.setImageResource(R.drawable.ic_file_download_black_24dp);
         }
 
 
-        Glide.with(activity).load(items.get(position).getThumbnail()).into(ivThumb);
-        tvTitle.setText(items.get(position).getName());
+        Glide.with(activity).load(items.get(position).getThumbnail()).into(viewHolder.ivThumb);
+        viewHolder.tvTitle.setText(items.get(position).getName());
 
-        ivDownload.setOnClickListener(new View.OnClickListener() {
+        viewHolder.ivDownload.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(listener != null) {
@@ -96,15 +103,15 @@ public class VideoAdapter extends ArrayAdapter<VideoModel> {
                     final File[] file = dir.listFiles();
                     if (Utils.isFolderPresent(dir) && ZipHelper.searchFile(file, null)) { // if file is present
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-                        alertDialogBuilder.setTitle("Delete"); // set title
-                        alertDialogBuilder.setMessage("Do you want to delete this offline video?") // set dialog message
+                        alertDialogBuilder.setTitle(R.string.delete); // set title
+                        alertDialogBuilder.setMessage(R.string.do_you_want_to_delete) // set dialog message
                                 .setCancelable(false)
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        listener.onDeleteClicked(dir, ivDownload);
+                                        listener.onDeleteClicked(dir, viewHolder.ivDownload);
                                     }
                                 })
-                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.cancel();
                                     }
@@ -113,15 +120,15 @@ public class VideoAdapter extends ArrayAdapter<VideoModel> {
                         alertDialog.show(); // show it
                     } else {
                         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(activity);
-                        alertDialogBuilder.setTitle("Download"); // set title
-                        alertDialogBuilder.setMessage("Do you want to download this video?") // set dialog message
+                        alertDialogBuilder.setTitle(R.string.download); // set title
+                        alertDialogBuilder.setMessage(R.string.do_you_want_to_download) // set dialog message
                                 .setCancelable(false)
-                                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                                .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
-                                        listener.onDownloadClicked(items.get(position), ivDownload);
+                                        listener.onDownloadClicked(items.get(position), viewHolder.ivDownload);
                                     }
                                 })
-                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int id) {
                                         dialog.cancel();
                                     }
@@ -134,7 +141,7 @@ public class VideoAdapter extends ArrayAdapter<VideoModel> {
             }
         });
 
-        v.setOnClickListener(new View.OnClickListener() {
+        convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(listener != null)
@@ -142,6 +149,14 @@ public class VideoAdapter extends ArrayAdapter<VideoModel> {
             }
         });
 
-        return v;
+        return convertView;
     }
+
+    public class ViewHolder {
+        ImageView ivThumb;
+        ImageView ivDownload;
+        TextView tvTitle;
+        TextView tvPercentage;
+    }
+
 }
