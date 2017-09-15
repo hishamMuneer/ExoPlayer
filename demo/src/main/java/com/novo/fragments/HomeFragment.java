@@ -30,7 +30,7 @@ public class HomeFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        LayoutInflater layoutInflater = getLayoutInflater();
+        LayoutInflater layoutInflater = getActivity().getLayoutInflater();
         View view = layoutInflater.inflate(R.layout.fragment_home, container, false);
 
         for (int i = 0; i < STRINGS.length; i++)
