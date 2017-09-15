@@ -1,25 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_home_black_24dp"
-        android:title="@string/title_home" />
+        android:title="@string/title_home"
+        app:showAsAction="always|withText"/>
+
+    <item
+        android:id="@+id/navigation_library"
+        android:icon="@drawable/ic_video_library_black_24dp"
+        android:title="@string/title_library"
+        app:showAsAction="always|withText"/>
 
     <item
         android:id="@+id/navigation_dashboard"
         android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_dashboard" />
+        android:title="@string/title_dashboard"
+        app:showAsAction="always|withText"/>
 
-    <item
-        android:id="@+id/navigation_library"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_library" />
 
-    <item
-        android:id="@+id/navigation_others"
-        android:icon="@drawable/ic_dashboard_black_24dp"
-        android:title="@string/title_others" />
+
+    <!--<item-->
+        <!--android:id="@+id/navigation_others"-->
+        <!--android:icon="@drawable/ic_dashboard_black_24dp"-->
+        <!--android:title="@string/title_others"-->
+        <!--app:showAsAction="always|withText"/>-->
 
 
 </menu>

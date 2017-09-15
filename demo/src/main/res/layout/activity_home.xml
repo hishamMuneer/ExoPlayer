@@ -8,25 +8,21 @@
     android:orientation="vertical"
     tools:context="com.novo.main.HomeActivity">
 
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="right"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
+        android:text="Login"
+        android:textAllCaps="false" />
+
     <FrameLayout
-        android:id="@+id/content"
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <TextView
-            android:id="@+id/message"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginLeft="@dimen/activity_horizontal_margin"
-            android:layout_marginRight="@dimen/activity_horizontal_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:text="@string/title_home" />
-
-        <include layout="@layout/activity_main" />
-
-    </FrameLayout>
+        android:layout_weight="1" />
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/navigation"
@@ -35,5 +31,8 @@
         android:layout_gravity="bottom"
         android:background="?android:attr/windowBackground"
         app:menu="@menu/navigation" />
+        <!--app:itemBackground="@color/md_teal_800"-->
+        <!--app:itemIconTint="@drawable/bnv_tab_item_foreground"-->
+        <!--app:itemTextColor="@drawable/bnv_tab_item_foreground"-->
 
 </LinearLayout>

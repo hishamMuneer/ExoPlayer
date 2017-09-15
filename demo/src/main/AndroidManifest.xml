@@ -106,8 +106,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".main.LoginActivity"
-            android:theme="@android:style/Theme.Holo.Light" />
+            android:name=".main.LoginActivity" />
 
         <service
             android:name=".services.DownloaderService"

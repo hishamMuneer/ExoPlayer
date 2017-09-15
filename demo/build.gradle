@@ -64,13 +64,14 @@ dependencies {
     withExtensionsCompile project(path: modulePrefix + 'extension-ima')
     withExtensionsCompile project(path: modulePrefix + 'extension-opus')
     withExtensionsCompile project(path: modulePrefix + 'extension-vp9')
-	withExtensionsCompile project(path: modulePrefix + 'extension-rtmp')
+    withExtensionsCompile project(path: modulePrefix + 'extension-rtmp')
     compile 'commons-io:commons-io:2.5'
     compile 'com.google.code.gson:gson:2.8.1'
     compile 'com.github.bumptech.glide:glide:4.0.0'
-    compile 'com.android.support:support-v4:25.4.0'
+    compile 'com.android.support:support-v4:25.3.1'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:support-vector-drawable:25.3.1'
+    compile 'me.relex:circleindicator:1.2.2@aar'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0'
 }
