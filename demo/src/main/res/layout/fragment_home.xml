@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,4 +23,35 @@
 
     </RelativeLayout>
 
-</FrameLayout>
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/rl_view_pager">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view1"
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view2"
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view3"
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/recycler_view4"
+                android:layout_width="match_parent"
+                android:layout_height="100dp" />
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

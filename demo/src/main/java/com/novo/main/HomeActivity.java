@@ -50,6 +50,7 @@ public class HomeActivity extends AppCompatActivity implements DemoFragment.OnDe
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
+
     @Override
     protected void onResume() {
         super.onResume();
