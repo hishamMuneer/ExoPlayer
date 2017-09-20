@@ -1,27 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/cv"
-    android:layout_width="100dp"
-    android:layout_height="100dp"
-    android:layout_margin="10dp">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    android:layout_height="wrap_content">
 
-    <RelativeLayout
-        android:gravity="center"
+    <TextView
+        android:id="@+id/tvCatTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="The gre pack"
+        android:textAllCaps="true"
+        android:layout_marginTop="4dp"
+        android:textSize="16sp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/tvCatSubTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Learn from around 400 videos"
+        android:layout_marginTop="4dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginStart="8dp"
+        android:textSize="12sp"
+        android:layout_below="@+id/tvCatTitle" />
+
+
+    <TextView
+        android:id="@+id/tvSeeMore"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="See More"
+        android:layout_marginTop="4dp"
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:textSize="16sp"
+        android:textColor="@color/secondary"
+        android:textStyle="bold" />
+
+    <HorizontalScrollView
+        android:layout_below="@id/tvCatSubTitle"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_marginTop="8dp"
+        android:layout_height="wrap_content"
+        android:scrollbars="none">
 
-        <ImageView
-            android:id="@+id/iv_thumbnail"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/linearLayoutContainer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:src="@mipmap/ic_launcher" />
+            android:layout_margin="4dp"
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tv_video_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/iv_thumbnail"
-            android:text="Hello World"
-            android:textSize="12sp" />
-    </RelativeLayout>
-</android.support.v7.widget.CardView>
+            <!--To be filled dynamically-->
+
+        </LinearLayout>
+    </HorizontalScrollView>
+</RelativeLayout>

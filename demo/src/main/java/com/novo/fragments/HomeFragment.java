@@ -1,21 +1,29 @@
 package com.novo.fragments;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.novo.R;
 import com.novo.adapters.BannerAdapter;
 import com.novo.adapters.ContentAdapter;
-import com.novo.models.VideoContent;
+import com.novo.models.CategoryContentModel;
+import com.novo.models.CategoryItemModel;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 import me.relex.circleindicator.CircleIndicator;
 
@@ -23,15 +31,16 @@ import me.relex.circleindicator.CircleIndicator;
 public class HomeFragment extends Fragment {
     private static ViewPager mPager;
     private ArrayList<String> ImagesArray = new ArrayList<>();
-    private static final String[] STRINGS = {"http://lorempixel.com/750/400/nightlife/", "http://lorempixel.com/750/400/technics/",
-            "http://lorempixel.com/750/400/nature/", "http://lorempixel.com/750/400/city/"};
+    private static final String[] STRINGS = {
+            "https://drmdemo-94ea7.firebaseapp.com/280x280_2.png",
+            "https://drmdemo-94ea7.firebaseapp.com/200x200_2.png",
+            "https://drmdemo-94ea7.firebaseapp.com/200x200_3.png",
+            "https://drmdemo-94ea7.firebaseapp.com/200x200_4.png",
+            "https://drmdemo-94ea7.firebaseapp.com/200x200_5.png",
+            "https://drmdemo-94ea7.firebaseapp.com/280x280_1.png"
+    };
 
-    private RecyclerView recyclerView1;
-    private RecyclerView recyclerView2;
-    private RecyclerView recyclerView3;
-    private RecyclerView recyclerView4;
-    private ArrayList<VideoContent> videoContents = new ArrayList<>();
-    private String[] videoName = {"Hello", "Inception", "world", "Interstellar", "True", "Amazon", "Coming", "Test"};
+    private ArrayList<CategoryContentModel> categoryContentModels = new ArrayList<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -51,38 +60,33 @@ public class HomeFragment extends Fragment {
 
         mPager = (ViewPager) view.findViewById(R.id.pager);
         CircleIndicator indicator = (CircleIndicator) view.findViewById(R.id.indicator);
-        recyclerView1 = (RecyclerView) view.findViewById(R.id.recycler_view1);
-        recyclerView2 = (RecyclerView) view.findViewById(R.id.recycler_view2);
-        recyclerView3 = (RecyclerView) view.findViewById(R.id.recycler_view3);
-        recyclerView4 = (RecyclerView) view.findViewById(R.id.recycler_view4);
+        RecyclerView recyclerView = (RecyclerView) view.findViewById(R.id.recycler_view);
 
         mPager.addOnPageChangeListener(onPageChangeListener);
         mPager.setAdapter(new BannerAdapter(this, ImagesArray));
         indicator.setViewPager(mPager);
 
-        recyclerView1.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, true));
-        ContentAdapter contentAdapter1 = new ContentAdapter(getActivity(), R.layout.row_content, videoContents);
-        recyclerView1.setAdapter(contentAdapter1);
-
-        recyclerView2.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, true));
-        ContentAdapter contentAdapter2 = new ContentAdapter(getActivity(), R.layout.row_content, videoContents);
-        recyclerView2.setAdapter(contentAdapter2);
-
-        recyclerView3.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, true));
-        ContentAdapter contentAdapter3 = new ContentAdapter(getActivity(), R.layout.row_content, videoContents);
-        recyclerView3.setAdapter(contentAdapter3);
-
-        recyclerView4.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, true));
-        ContentAdapter contentAdapter4 = new ContentAdapter(getActivity(), R.layout.row_content, videoContents);
-        recyclerView4.setAdapter(contentAdapter4);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        ContentAdapter contentAdapter1 = new ContentAdapter(getActivity(), R.layout.row_content, categoryContentModels);
+        recyclerView.setAdapter(contentAdapter1);
 
         return view;
     }
 
     private void init() {
-        for(int i = 0; i < videoName.length; i++) {
-            VideoContent videoContent = new VideoContent();
-            videoContents.add(videoContent.setVideoName(videoName[i]));
+        for (int i = 0; i < 10; i++) {
+            CategoryContentModel categoryContentModel = new CategoryContentModel();
+            categoryContentModel.setTitle("The category " + i + " pack");
+            categoryContentModel.setSubTitle("Learn from around " + (i*100) + " videos");
+            List<CategoryItemModel> itemModels = new ArrayList<>();
+
+            for(int j = 0; j < 8; j++){
+                CategoryItemModel itemModel = new CategoryItemModel(STRINGS[new Random().nextInt(STRINGS.length)], "Video Title: " + j);
+                itemModels.add(itemModel);
+            }
+
+            categoryContentModel.setItemModels(itemModels);
+            categoryContentModels.add(categoryContentModel);
         }
     }
 

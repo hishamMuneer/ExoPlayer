@@ -22,12 +22,22 @@
   </style>
 
 
-  <color name="primary">@color/md_blue_500</color>
-  <color name="primaryDark">@color/md_blue_700</color>
-  <color name="secondary">@color/md_pink_800</color>
+  <color name="primary">@color/voca_green</color>
+  <color name="primaryDark">@color/voca_green_dark</color>
+  <color name="secondary">@color/voca_blue</color>
+  <color name="category_grey">@color/voca_footer_nav</color>
+
+
+  <color name="voca_green">#75c74e</color>
+  <color name="voca_green_dark">#60a73f</color>
+  <color name="voca_blue">#3d54ff</color>
+  <color name="voca_footer_nav">#2a2a2a</color>
+  <color name="voca_header_bg">#242424</color>
+  <color name="voca_header_bg_dark">#161616</color>
+  <color name="voca_plus_icon">#626262</color>
 
   <!-- Base application theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+  <style name="AppTheme" parent="Theme.AppCompat">
     <!-- Customize your theme here. -->
     <item name="android:windowContentOverlay">@null</item>
     <item name="colorPrimary">@color/primary</item>
@@ -45,6 +55,5 @@
 
   <!-- Base application theme. -->
   <style name="AppThemeNoActionBar" parent="Theme.AppCompat.Light.NoActionBar"></style>
-
 
 </resources>
