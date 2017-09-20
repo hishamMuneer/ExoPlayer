@@ -35,6 +35,7 @@
   <color name="voca_header_bg">#242424</color>
   <color name="voca_header_bg_dark">#161616</color>
   <color name="voca_plus_icon">#626262</color>
+  <color name="voca_login_social_background">#626262</color>
 
   <!-- Base application theme. -->
   <style name="AppTheme" parent="Theme.AppCompat">
@@ -56,4 +57,53 @@
   <!-- Base application theme. -->
   <style name="AppThemeNoActionBar" parent="Theme.AppCompat.Light.NoActionBar"></style>
 
+
+  <style name="ButtonsDefault">
+    <item name="android:layout_width">match_parent</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:paddingLeft">10dp</item>
+    <item name="android:paddingRight">10dp</item>
+    <item name="android:layout_marginTop">4dp</item>
+    <item name="android:layout_marginBottom">4dp</item>
+    <item name="android:layout_marginLeft">20dp</item>
+    <item name="android:layout_marginRight">20dp</item>
+    <item name="android:textColor">@android:color/white</item>
+    <item name="android:textSize">14sp</item>
+    <item name="android:layout_gravity">center</item>
+    <item name="android:textAllCaps">false</item>
+  </style>
+
+  <style name="ButtonsDefault.Facebook">
+    <item name="android:background">@drawable/transparent_button_selector_facebook</item>
+    <item name="android:drawableLeft">@drawable/ic_facebook_logo</item>
+    <item name="android:drawableStart">@drawable/ic_facebook_logo</item>
+      <item name="android:textColor">#3b5998</item>
+  </style>
+
+
+  <style name="ButtonsDefault.Google">
+    <item name="android:background">@drawable/transparent_button_selector_google</item>
+    <item name="android:drawableLeft">@drawable/ic_google_plus_logo</item>
+    <item name="android:drawableStart">@drawable/ic_google_plus_logo</item>
+      <item name="android:textColor">#dd4b39</item>
+  </style>
+
+    <style name="EditTextDefault">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:paddingTop">12dp</item>
+        <item name="android:layout_marginTop">4dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:layout_marginRight">20dp</item>
+        <item name="android:textColor">@color/md_white</item>
+        <item name="android:textSize">@dimen/sp_14</item>
+        <item name="android:textColorHint">@color/md_white</item>
+    </style>
+
+    <dimen name="dp240">240dp</dimen>
 </resources>

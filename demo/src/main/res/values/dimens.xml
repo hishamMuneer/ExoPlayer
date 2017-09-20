@@ -5,4 +5,14 @@
     <dimen name="app_bar_height">180dp</dimen>
     <dimen name="collapsing_toolbar_height">240dp</dimen>
     <dimen name="view_pager_height">160dp</dimen>
+    <dimen name="login_v_image_height">150dp</dimen>
+    <dimen name="sp_24">24sp</dimen>
+    <dimen name="sp_18">18sp</dimen>
+    <dimen name="sp_14">14sp</dimen>
+    <dimen name="dp_8">8dp</dimen>
+    <dimen name="z_bottom_sheet">4dp</dimen>
+    <dimen name="margin_bottom_24">24dp</dimen>
+    <dimen name="d_20">20dp</dimen>
+    <dimen name="margin_top_default">16dp</dimen>
+    <dimen name="drawable_padding_default">8dp</dimen>
 </resources>

@@ -157,6 +157,8 @@ public class PlayerActivity extends Activity implements OnClickListener, EventLi
 
     simpleExoPlayerView = (SimpleExoPlayerView) findViewById(R.id.player_view);
     simpleExoPlayerView.setControllerVisibilityListener(this);
+    simpleExoPlayerView.setRewindIncrementMs(10000);
+    simpleExoPlayerView.setFastForwardIncrementMs(10000);
     simpleExoPlayerView.requestFocus();
   }
 

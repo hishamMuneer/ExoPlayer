@@ -117,6 +117,10 @@
             android:enabled="true"
             android:process=":remote"/>
 
+        <activity
+            android:name=".main.VocalLoginActivity"
+            android:windowSoftInputMode="adjustPan|stateHidden">
+        </activity>
     </application>
 
 </manifest>

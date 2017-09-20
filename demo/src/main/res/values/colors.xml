@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_bottom_sheet">#888888</color>
+    <color name="facebook">#3B579D</color>
+    <color name="google">#DC4A38</color>
+    <color name="divider">#A3C4BE</color>
+</resources>

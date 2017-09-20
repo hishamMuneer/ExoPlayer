@@ -52,7 +52,7 @@ public class HomeActivity extends AppCompatActivity implements DemoFragment.OnDe
                     loginButtonTextUpdate();
                     return;
                 }
-                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                Intent intent = new Intent(getApplicationContext(), VocalLoginActivity.class);
                 Bundle bundle = new Bundle();
                 startActivity(intent.putExtras(bundle));
             }
