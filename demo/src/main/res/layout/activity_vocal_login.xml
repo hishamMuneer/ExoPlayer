@@ -90,7 +90,7 @@
         android:layout_height="wrap_content"
         android:elevation="@dimen/z_bottom_sheet"
         android:id="@+id/viewBottomSheet"
-        app:behavior_peekHeight="40dp"
+        app:behavior_peekHeight="@dimen/bottom_sheet_peek_height"
         app:layout_behavior="@string/string_bottom_sheet_behavior">
 
         <RelativeLayout
@@ -102,14 +102,15 @@
             <LinearLayout
                 android:id="@+id/llLoginSignUp"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/bottom_sheet_peek_height"
                 android:orientation="horizontal">
 
                 <LinearLayout
                     android:id="@+id/llLogin"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:background="@color/primary">
 
                     <TextView
@@ -125,8 +126,9 @@
                 <LinearLayout
                     android:id="@+id/llJoinUs"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:background="@color/voca_header_bg">
 
                     <TextView
