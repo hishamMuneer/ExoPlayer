@@ -1,68 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:background="@color/voca_header_bg"
-              android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/voca_header_bg"
+    android:orientation="vertical">
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/d_20"
             android:orientation="vertical"
-            android:layout_marginTop="@dimen/d_20">
+            >
+
             <Button
                 android:id="@+id/btnLoginFacebook"
                 style="@style/ButtonsDefault.Facebook"
                 android:text="@string/login_with_facebook"
-                android:visibility="visible"
-                android:textAllCaps="false"/>
+                android:textAllCaps="false"
+                android:visibility="visible" />
 
             <Button
                 android:id="@+id/btnLoginGoogle"
                 style="@style/ButtonsDefault.Google"
-                android:textAllCaps="false"
-                android:visibility="gone"
+                android:layout_marginBottom="@dimen/margin_bottom_24"
                 android:layout_marginTop="@dimen/d_20"
-                android:layout_marginBottom="@dimen/margin_bottom_24"
-                android:text="@string/login_with_google" />
+                android:text="@string/login_with_google"
+                android:textAllCaps="false"
+                android:visibility="gone" />
 
-            <View
-                android:layout_width="240dp"
-                android:layout_height="1dp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="@dimen/margin_bottom_24"
-                android:layout_marginTop="@dimen/margin_top_default"
-                android:background="@color/divider" />
+            <!--<View-->
+                <!--android:layout_width="240dp"-->
+                <!--android:layout_height="1dp"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:layout_marginBottom="@dimen/margin_bottom_24"-->
+                <!--android:layout_marginTop="@dimen/margin_top_default"-->
+                <!--android:background="@color/divider" />-->
 
             <EditText
-                android:id="@+id/etEmail"
+                android:id="@+id/etSignupEmail"
                 style="@style/EditTextDefault"
+                android:drawablePadding="@dimen/drawable_padding_default"
                 android:ems="10"
                 android:hint="@string/enter_email"
-                android:drawablePadding="@dimen/drawable_padding_default"
                 android:inputType="textEmailAddress" />
 
             <EditText
-                android:id="@+id/etPassword"
+                android:id="@+id/etSignupPassword"
                 style="@style/EditTextDefault"
-                android:ems="10"
                 android:drawablePadding="@dimen/drawable_padding_default"
+                android:ems="10"
                 android:hint="@string/enter_password"
                 android:inputType="textPassword" />
 
 
             <Button
-                android:id="@+id/btnLogin"
-                style="@style/ButtonsDefault"
+                android:id="@+id/btnSignupLogin"
+                style="@style/ButtonsDefault.BottomSheet"
                 android:text="@string/login"
-                android:textColor="@color/primary"
-                android:textAllCaps="false"/>
+                android:textAllCaps="false"
+                android:textColor="@color/primary" />
         </LinearLayout>
-    </ScrollView>
-
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

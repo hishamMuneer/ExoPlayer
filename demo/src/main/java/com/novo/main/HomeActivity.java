@@ -60,6 +60,8 @@ public class HomeActivity extends AppCompatActivity implements DemoFragment.OnDe
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.navigation);
         bottomNavigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        startActivity(new Intent(this, VocalLoginActivity.class));
     }
 
 

@@ -5,7 +5,10 @@ import android.os.Bundle;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.widget.NestedScrollView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+
 import com.novo.R;
 
 public class VocalLoginActivity extends Activity implements View.OnClickListener{
@@ -15,7 +18,7 @@ public class VocalLoginActivity extends Activity implements View.OnClickListener
     private NestedScrollView viewBottomSheet;
     private LinearLayout llLogin;
     private LinearLayout llJoinUs;
-    private BottomSheetBehavior<NestedScrollView> bottomSheetBehavior;
+    private BottomSheetBehavior<RelativeLayout> bottomSheetBehavior;
     private LinearLayout llLoginView;
     private LinearLayout llSignUpView;
 
@@ -28,8 +31,9 @@ public class VocalLoginActivity extends Activity implements View.OnClickListener
         llJoinUs = (LinearLayout) findViewById(R.id.llJoinUs);
         llLoginView = (LinearLayout) findViewById(R.id.llLoginView);
         llSignUpView = (LinearLayout) findViewById(R.id.llSignUpView);
-        viewBottomSheet = (NestedScrollView) findViewById(R.id.viewBottomSheet);
-        bottomSheetBehavior = BottomSheetBehavior.from(viewBottomSheet);
+//        viewBottomSheet = (NestedScrollView) findViewById(R.id.viewBottomSheet);
+        RelativeLayout sheetRL = (RelativeLayout) findViewById(R.id.sheetRL);
+        bottomSheetBehavior = BottomSheetBehavior.from(sheetRL);
 
         llLogin.setOnClickListener(this);
         llJoinUs.setOnClickListener(this);

@@ -5,7 +5,7 @@
               android:background="@color/voca_header_bg"
               android:layout_height="match_parent">
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -13,7 +13,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/d_20"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
 
             <Button
                 android:id="@+id/btnLoginFacebook"
@@ -26,23 +27,24 @@
                 android:id="@+id/btnLoginGoogle"
                 style="@style/ButtonsDefault.Google"
                 android:layout_marginBottom="@dimen/margin_bottom_24"
-                android:layout_marginTop="@dimen/d_20"
+                android:layout_marginTop="8dp"
                 android:text="@string/login_with_google"
                 android:textAllCaps="false" />
 
-            <View
-                android:layout_width="240dp"
-                android:layout_height="1dp"
-                android:layout_gravity="center"
-                android:layout_marginBottom="@dimen/margin_bottom_24"
-                android:layout_marginTop="@dimen/margin_top_default"
-                android:background="@color/divider" />
+            <!--<View-->
+                <!--android:layout_width="240dp"-->
+                <!--android:layout_height="1dp"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:layout_marginBottom="@dimen/margin_bottom_24"-->
+                <!--android:layout_marginTop="@dimen/margin_top_default"-->
+                <!--android:background="@color/divider" />-->
 
             <EditText
                 android:id="@+id/etEmail"
                 style="@style/EditTextDefault"
                 android:drawablePadding="@dimen/drawable_padding_default"
                 android:ems="10"
+                android:textColorHint="@color/md_grey_500"
                 android:hint="@string/enter_email"
                 android:inputType="textEmailAddress" />
 
@@ -51,18 +53,19 @@
                 style="@style/EditTextDefault"
                 android:drawablePadding="@dimen/drawable_padding_default"
                 android:ems="10"
+                android:textColorHint="@color/md_grey_500"
                 android:hint="@string/enter_password"
                 android:inputType="textPassword" />
 
 
             <Button
                 android:id="@+id/btnLogin"
-                style="@style/ButtonsDefault"
+                style="@style/ButtonsDefault.BottomSheet"
                 android:text="@string/login"
-                android:textAllCaps="false"
+                android:textAllCaps="true"
                 android:textColor="@color/primary" />
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 
 </LinearLayout>

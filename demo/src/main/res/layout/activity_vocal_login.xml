@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,29 +8,28 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-
+        android:layout_height="wrap_content">
 
         <ImageView
             android:id="@+id/iv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
-            android:src="@mipmap/back" />
+            android:src="@drawable/back" />
 
 
         <LinearLayout
             android:id="@+id/llTop"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginLeft="24dp"
+            android:layout_marginRight="24dp"
             android:orientation="vertical">
 
             <LinearLayout
                 android:id="@+id/llLogo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <ImageView
@@ -39,7 +37,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/login_v_image_height"
                     android:layout_alignParentTop="true"
-                    android:src="@drawable/v"/>
+                    android:src="@drawable/v" />
 
                 <TextView
                     android:id="@+id/tvName"
@@ -48,129 +46,133 @@
                     android:layout_below="@+id/ivLogoLogin"
                     android:gravity="center"
                     android:text="@string/vocabimate"
-                    android:textSize="@dimen/sp_24"
-                    />
+                    android:textSize="@dimen/sp_24" />
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/llImportantText"
+
+            <TextView
+                android:id="@+id/tvImportantText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="@string/some_text_claiming_that_the_app_is_the_new_talk_in_the_town"
+                android:textSize="30sp"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/tvImportantText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/llLogo"
-                    android:layout_centerInParent="true"
-                    android:layout_margin="10dp"
-                    android:gravity="center"
-                    android:text="@string/some_text_claiming_that_the_app_is_the_new_talk_in_the_town"
-                    android:textSize="@dimen/sp_18"
-                    />
-            </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/llMoreImportantText"
+            <TextView
+                android:id="@+id/tvMoreImportantText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_marginTop="16dp"
+                android:gravity="center"
+                android:padding="8dp"
+                android:text="@string/some_text"
+                android:textSize="@dimen/sp_14" />
 
-                <TextView
-                    android:id="@+id/tvMoreImportantText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/llImportantText"
-                    android:layout_margin="10dp"
-                    android:gravity="center"
-                    android:text="@string/some_text"
-                    android:textSize="@dimen/sp_14"
-                    />
-            </LinearLayout>
 
         </LinearLayout>
     </RelativeLayout>
+
+
     <!-- bottom sheet layout -->
-    <android.support.v4.widget.NestedScrollView
+    <RelativeLayout
+        android:id="@+id/sheetRL"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:elevation="@dimen/z_bottom_sheet"
-        android:id="@+id/viewBottomSheet"
+        android:layout_height="400dp"
         app:behavior_peekHeight="@dimen/bottom_sheet_peek_height"
         app:layout_behavior="@string/string_bottom_sheet_behavior">
 
-        <RelativeLayout
-            android:id="@+id/relativeLayoutBottomSheet"
+        <LinearLayout
+            android:id="@+id/llLoginSignUp"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
-            android:background="@color/color_bottom_sheet">
+            android:layout_height="@dimen/bottom_sheet_peek_height"
+            android:orientation="horizontal">
 
             <LinearLayout
-                android:id="@+id/llLoginSignUp"
+                android:id="@+id/llLogin"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/primary"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/dp_8"
+                    android:gravity="center|center_vertical"
+                    android:text="@string/login"
+                    android:textAllCaps="true"
+                    android:letterSpacing=".1"
+                    android:textSize="@dimen/sp_18"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llJoinUs"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/voca_header_bg"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/dp_8"
+                    android:gravity="center|center_vertical"
+                    android:text="@string/join_us"
+                    android:letterSpacing=".1"
+                    android:textAllCaps="true"
+                    android:textSize="@dimen/sp_18"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+
+
+        </LinearLayout>
+        <View
+            android:id="@+id/division"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@id/llLoginSignUp"
+            android:background="@color/primary"/>
+
+        <android.support.v4.widget.NestedScrollView
+            android:id="@+id/viewBottomSheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/division"
+            android:elevation="@dimen/z_bottom_sheet">
+
+            <RelativeLayout
+                android:id="@+id/relativeLayoutBottomSheet"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/bottom_sheet_peek_height"
-                android:orientation="horizontal">
+                android:layout_height="wrap_content"
+                android:background="@color/color_bottom_sheet">
+
 
                 <LinearLayout
-                    android:id="@+id/llLogin"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:background="@color/primary">
+                    android:id="@+id/llLoginView"
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/dp_8"
-                        android:gravity="center|center_vertical"
-                        android:text="@string/login"
-                        android:textSize="@dimen/sp_18"
-                        android:textStyle="bold"/>
+                    <include layout="@layout/bottom_sheet_login" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/llJoinUs"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:background="@color/voca_header_bg">
+                    android:id="@+id/llSignUpView"
+                    android:layout_width="match_parent"
+                    android:layout_height="400dp"
+                    android:visibility="gone">
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="@dimen/dp_8"
-                        android:gravity="center|center_vertical"
-                        android:text="@string/join_us"
-                        android:textSize="@dimen/sp_18"
-                        android:textStyle="bold"/>
+                    <include layout="@layout/bottom_sheet_signup" />
                 </LinearLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:id="@+id/llLoginView"
-                android:layout_below="@+id/llLoginSignUp">
-
-                <include layout="@layout/bottom_sheet_login"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="400dp"
-                android:id="@+id/llSignUpView"
-                android:visibility="gone"
-                android:layout_below="@+id/llLoginSignUp">
-
-                <include layout="@layout/bottom_sheet_signup"/>
-            </LinearLayout>
-        </RelativeLayout>
-    </android.support.v4.widget.NestedScrollView>
-
+            </RelativeLayout>
+        </android.support.v4.widget.NestedScrollView>
+    </RelativeLayout>
 </android.support.design.widget.CoordinatorLayout>

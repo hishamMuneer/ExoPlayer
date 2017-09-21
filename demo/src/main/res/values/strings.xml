@@ -75,15 +75,15 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="vocabimate">VOCABIMATE</string>
-    <string name="some_text_claiming_that_the_app_is_the_new_talk_in_the_town">SOME TEXT CLAIMING THAT THE APP IS THE NEW TALK IN THE TOWN.</string>
-    <string name="some_text">ALSO, JACK SAID HE WAS GREAT WHEN HE\'S AROUND DANIELS</string>
-    <string name="login">LOGIN</string>
-    <string name="join_us">JOIN US</string>
+    <string name="vocabimate">Vocabimate</string>
+    <string name="some_text_claiming_that_the_app_is_the_new_talk_in_the_town">Some text claiming that the app is the new talk in the town.</string>
+    <string name="some_text">Also, Jack said he was great when he\'s around daniels</string>
+    <string name="login">Login</string>
+    <string name="join_us">Join Us</string>
     <string name="string_bottom_sheet_behavior">android.support.design.widget.BottomSheetBehavior</string>
-    <string name="login_with_facebook">LOGIN WITH FACEBOOK</string>
-    <string name="login_with_google">LOGIN WITH GOOGLE</string>
-    <string name="enter_email">USER ID</string>
-    <string name="enter_password">PASSWORD</string>
+    <string name="login_with_facebook">Login with Facebook</string>
+    <string name="login_with_google">Login with Google</string>
+    <string name="enter_email">Email</string>
+    <string name="enter_password">Password</string>
 
 </resources>

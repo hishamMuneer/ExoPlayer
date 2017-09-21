@@ -19,7 +19,7 @@ android {
     buildToolsVersion project.ext.buildToolsVersion
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 21
         targetSdkVersion project.ext.targetSdkVersion
         applicationId = "com.novo.player"
         vectorDrawables.useSupportLibrary = true
