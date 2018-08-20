@@ -40,6 +40,7 @@ public class HLSUtils {
     private static Map<String, String> splitQuery(URL url) throws UnsupportedEncodingException {
         Map<String, String> query_pairs = new LinkedHashMap<String, String>();
         String query = url.getQuery();
+        if(query == null) return null; // If there is no query, no need to split.
         String[] pairs = query.split("&");
         for (String pair : pairs) {
             int idx = pair.indexOf("=");

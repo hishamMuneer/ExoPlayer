@@ -99,7 +99,7 @@ public final class HlsMediaPlaylist extends HlsPlaylist {
        * Hisham : In every prog_index file, we have replaced the key path with custom:// prefix so that iOS can get the event in
        * their callbacks for playing file in offline mode. On Android we have to replace that url prefix with http or https. Doing the same below.
        */
-      if(encryptionKeyUri.contains("custom://")) {
+      if(encryptionKeyUri != null && encryptionKeyUri.contains("custom://")) {
         encryptionKeyUri = encryptionKeyUri.replace("custom://", "http://");
       }
       this.encryptionKeyUri = encryptionKeyUri;
